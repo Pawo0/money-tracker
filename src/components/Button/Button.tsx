@@ -1,16 +1,18 @@
 import {cn} from "@/lib/utils"
+import React from "react";
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode,
   className?: string,
   variant?: 'primary' | 'secondary'
 }
 
-export default function Button(
+function Button(
   {
     children,
     className,
-    variant = 'primary'
+    variant = 'primary',
+    ...props
   }: ButtonProps) {
   return (
     <button
@@ -22,9 +24,12 @@ export default function Button(
         },
         className
       )}
+      {...props}
     >
       {children}
     </button>
   )
 
 }
+
+export default Button
