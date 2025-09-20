@@ -12,14 +12,19 @@ export default function Home() {
           Track your expenses and manage your budget
         </p>
         <div className="space-x-4">
-          <Button>
-            <Link href={"/signup"}>
-              Get Started
-            </Link>
-          </Button>
+          {/*<Button>*/}
+          {/*  <Link href={"/signup"}>*/}
+          {/*    Get Started*/}
+          {/*  </Link>*/}
+          {/*</Button>*/}
+          {/*<Button variant={"secondary"}>*/}
+          {/*  <Link href={"/signin"}>*/}
+          {/*    Sign In*/}
+          {/*  </Link>*/}
+          {/*</Button>*/}
           <Button variant={"secondary"}>
-            <Link href={"/signin"}>
-              Sign In
+            <Link href={"/dashboard"}>
+              Dashboard
             </Link>
           </Button>
         </div>

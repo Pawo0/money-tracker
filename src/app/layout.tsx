@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import {Inter} from 'next/font/google'
 import "./globals.css";
 import Container from "@/components/Container";
+import {SessionProvider} from "next-auth/react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,9 +24,11 @@ export default function RootLayout(
     <body
       className={`${inter.variable} antialiased`}
     >
-    <Container>
-      {children}
-    </Container>
+    <SessionProvider>
+      <Container className={"min-h-screen bg-gray-900 p-4 flex justify-center"}>
+        {children}
+      </Container>
+    </SessionProvider>
     </body>
     </html>
   );
