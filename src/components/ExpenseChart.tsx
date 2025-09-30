@@ -12,8 +12,8 @@ import {
 } from "chart.js"
 
 
-import { Line } from "react-chartjs-2";
-import { useEffect, useState } from "react";
+import {Line} from "react-chartjs-2";
+import {useEffect, useState} from "react";
 
 ChartJS.register(
   CategoryScale,
@@ -25,22 +25,41 @@ ChartJS.register(
   Legend
 );
 
+interface ExpanseData {
+  _id: string;
+  userId: string;
+  date: string;
+  amount: number;
+  category: string;
+  title: string
+}
 
-
+interface DataSet {
+  labels: string,
+  datasets: [
+    {
+      label: string,
+      data: number[],
+      borderColor: string,
+      backgroundColor: string,
+      tension: number
+    }
+  ]
+}
 
 export default function ExpenseChart() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<DataSet | null>(null);
 
   useEffect(() => {
     fetch("/api/expenses")
       .then((res) => res.json())
       .then((expenses) => {
         // mapowanie danych pod Chart.js
-        const labels = expenses.map((exp: any) =>
-          new Date(exp.date).toLocaleDateString("pl-PL", { day: "2-digit", month: "short" })
+        const labels = expenses.map((exp: ExpanseData) =>
+          new Date(exp.date).toLocaleDateString("pl-PL", {day: "2-digit", month: "short"})
         );
 
-        const values = expenses.map((exp: any) => exp.amount);
+        const values: number[] = expenses.map((exp: ExpanseData) => exp.amount);
 
         setData({
           labels,
@@ -66,12 +85,12 @@ export default function ExpenseChart() {
         options={{
           responsive: true,
           plugins: {
-            legend: { display: false },
-            title: { display: false },
+            legend: {display: false},
+            title: {display: false},
           },
           scales: {
-            x: { grid: { color: "rgba(255,255,255,0.1)" } },
-            y: { grid: { color: "rgba(255,255,255,0.1)" } },
+            x: {grid: {color: "rgba(255,255,255,0.1)"}},
+            y: {grid: {color: "rgba(255,255,255,0.1)"}},
           },
         }}
       />
