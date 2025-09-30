@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-900 flex items-center justify-center">
+    <main className="flex items-center justify-center">
       <div className="text-center">
         <h1 className="text-4xl font-bold text-gray-50 mb-4">
           Money Tracker

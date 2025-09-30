@@ -8,9 +8,10 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend, ChartData
+  Legend
 } from "chart.js"
 
+import type {ChartData} from "chart.js";
 
 import {Line} from "react-chartjs-2";
 import {useEffect, useState} from "react";
@@ -34,45 +35,36 @@ interface ExpanseData {
   title: string
 }
 
-interface DataSet {
-  labels: string,
-  datasets: [
-    {
-      label: string,
-      data: number[],
-      borderColor: string,
-      backgroundColor: string,
-      tension: number
-    }
-  ]
-}
 
 export default function ExpenseChart() {
-  const [data, setData] = useState<ChartData<"line", DataSet[], string>>();
+  const [data, setData] = useState<ChartData<"line">>({
+    labels: [],
+    datasets: []
+  });
 
   useEffect(() => {
     fetch("/api/expenses")
       .then((res) => res.json())
-      .then((expenses) => {
-        // mapowanie danych pod Chart.js
-        const labels = expenses.map((exp: ExpanseData) =>
-          new Date(exp.date).toLocaleDateString("pl-PL", {day: "2-digit", month: "short"})
-        );
+      .then((expenses: ExpanseData[]) => {
+        const result = expenses.reduce<Record<string, number>>((acc, exp) => {
+          const data = new Date(exp.date).toLocaleDateString("pl-PL", {day: "2-digit", month: "short"})
+          acc[data] = (acc[data] ?? 0) + exp.amount
+          return acc
+        }, {})
 
-        const values = expenses.map((exp: ExpanseData) => exp.amount);
 
         setData({
-          labels,
+          labels: Object.keys(result),
           datasets: [
             {
               label: "Saldo",
-              data: values,
+              data: Object.values(result),
               borderColor: "rgb(75, 192, 192)",
               backgroundColor: "rgba(75, 192, 192, 0.5)",
               tension: 0.4, // wygładzenie linii
             },
           ],
-        });
+        })
       });
   }, []);
 

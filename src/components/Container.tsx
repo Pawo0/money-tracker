@@ -10,7 +10,7 @@ interface ContainerProps {
 function Container({
   children,
   className,
-  size = 'md'
+  size = 'xl'
 }: ContainerProps) {
   return (
     <section
