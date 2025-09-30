@@ -14,6 +14,5 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
           prompt: "select_account",
         }
       }
-    })],
-  debug: true
+    })]
 })

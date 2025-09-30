@@ -8,7 +8,7 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend, ChartData
 } from "chart.js"
 
 
@@ -48,7 +48,7 @@ interface DataSet {
 }
 
 export default function ExpenseChart() {
-  const [data, setData] = useState<DataSet | null>(null);
+  const [data, setData] = useState<ChartData<"line", DataSet[], string>>();
 
   useEffect(() => {
     fetch("/api/expenses")
@@ -59,7 +59,7 @@ export default function ExpenseChart() {
           new Date(exp.date).toLocaleDateString("pl-PL", {day: "2-digit", month: "short"})
         );
 
-        const values: number[] = expenses.map((exp: ExpanseData) => exp.amount);
+        const values = expenses.map((exp: ExpanseData) => exp.amount);
 
         setData({
           labels,

@@ -25,7 +25,7 @@ export default function RootLayout(
       className={`${inter.variable} antialiased`}
     >
     <SessionProvider>
-      <Container className={"min-h-screen bg-gray-900 p-4 flex justify-center"}>
+      <Container>
         {children}
       </Container>
     </SessionProvider>

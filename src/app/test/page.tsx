@@ -1,9 +1,19 @@
 import ExpenseChart from "@/components/ExpenseChart";
+import {auth} from "@/auth"
+import type { Session } from "next-auth";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session: Session | null = await auth();
+  if (!session){
+    return <main>
+      You have to be logged
+    </main>
+  }
+
+  const user = session.user
   return (
-    <main className="min-h-screen bg-black text-white p-6">
-      <h1 className="text-xl font-semibold">Dobry wieczór, Paweł</h1>
+    <main className="bg-black/80 rounded-2xl p-6 w-full">
+      <h1 className="text-xl font-semibold">Dobry wieczór, {user?.name}</h1>
 
       <div className="mt-6 grid gap-4">
         {/* Sekcja konta */}
