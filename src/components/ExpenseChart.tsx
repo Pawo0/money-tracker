@@ -15,6 +15,7 @@ import type {ChartData} from "chart.js";
 
 import {Line} from "react-chartjs-2";
 import {useEffect, useState} from "react";
+import useExpenses from "@/hooks/useExpenses";
 
 ChartJS.register(
   CategoryScale,
@@ -42,33 +43,32 @@ export default function ExpenseChart() {
     datasets: []
   });
 
+  const {expenses, loading} = useExpenses()
+
   useEffect(() => {
-    fetch("/api/expenses")
-      .then((res) => res.json())
-      .then((expenses: ExpanseData[]) => {
-        const result = expenses.reduce<Record<string, number>>((acc, exp) => {
-          const data = new Date(exp.date).toLocaleDateString("pl-PL", {day: "2-digit", month: "short"})
-          acc[data] = (acc[data] ?? 0) + exp.amount
-          return acc
-        }, {})
+    const result = expenses.reduce<Record<string, number>>((acc, exp) => {
+      const data = new Date(exp.date).toLocaleDateString("pl-PL", {day: "2-digit", month: "short"})
+      acc[data] = (acc[data] ?? 0) + exp.amount
+      return acc
+    }, {})
 
 
-        setData({
-          labels: Object.keys(result),
-          datasets: [
-            {
-              label: "Saldo",
-              data: Object.values(result),
-              borderColor: "rgb(75, 192, 192)",
-              backgroundColor: "rgba(75, 192, 192, 0.5)",
-              tension: 0.4, // wygładzenie linii
-            },
-          ],
-        })
-      });
-  }, []);
+    setData({
+      labels: Object.keys(result),
+      datasets: [
+        {
+          label: "Saldo",
+          data: Object.values(result),
+          borderColor: "rgb(75, 192, 192)",
+          backgroundColor: "rgba(75, 192, 192, 0.5)",
+          tension: 0.4, // wygładzenie linii
+        },
+      ],
+    })
+  }, [expenses]);
 
-  if (!data) return <p>Ładowanie...</p>;
+
+  if (!data || loading) return <p>Ładowanie...</p>;
 
   return (
     <div className="w-full h-64 bg-gray-900 p-4 rounded-2xl shadow-md">
