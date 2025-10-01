@@ -4,13 +4,13 @@ import {cn} from "@/lib/utils"
 interface ContainerProps {
   children: React.ReactNode,
   className?: string,
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full' | 'auto'
 }
 
 function Container({
   children,
   className,
-  size = 'xl'
+  size = 'auto'
 }: ContainerProps) {
   return (
     <section
@@ -20,7 +20,8 @@ function Container({
           'max-w-sm': size === 'sm',
           'max-w-md': size === 'md',
           'max-w-xl': size === 'xl',
-          'max-w-none': size === 'full'  // no limit
+          'max-w-none': size === 'full',
+          'max-w-md md:max-w-xl xl:max-w-2xl' : size === 'auto'
         },
         className
       )}
