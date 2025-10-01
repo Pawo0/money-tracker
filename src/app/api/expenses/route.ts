@@ -31,9 +31,33 @@ export async function GET(req: Request) {
       "_id": "4",
       "userId": "123",
       "date": "2025-09-22T12:00:00Z",
-      "amount": -7,
+      "amount": -4,
       "category": "Rower",
       "title": "Rower"
+    },
+    {
+      "_id": "5",
+      "userId": "123",
+      "date": "2025-09-16T12:00:00Z",
+      "amount": -51,
+      "category": "Ananas",
+      "title": "Ananas"
+    },
+    {
+      "_id": "6",
+      "userId": "123",
+      "date": "2025-09-28T12:00:00Z",
+      "amount": -12,
+      "category": "Kebab z mąką",
+      "title": "Kebab z mąką"
+    },
+    {
+      "_id": "7",
+      "userId": "123",
+      "date": "2025-09-24T12:00:00Z",
+      "amount": -33,
+      "category": "Płatki z mlekiem",
+      "title": "Płatki z mlekiem"
     }
   ]
 

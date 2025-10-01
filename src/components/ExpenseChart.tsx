@@ -59,7 +59,7 @@ export default function ExpenseChart() {
   }, [expenses]);
 
 
-  if (!data || loading) return <p>Ładowanie...</p>;
+  if (!data || loading) return <p>Loading...</p>;
 
   return (
     <div className="w-full  bg-gray-900 p-4 rounded-2xl shadow-md">
