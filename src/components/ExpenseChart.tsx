@@ -27,15 +27,6 @@ ChartJS.register(
   Legend
 );
 
-interface ExpanseData {
-  _id: string;
-  userId: string;
-  date: string;
-  amount: number;
-  category: string;
-  title: string
-}
-
 
 export default function ExpenseChart() {
   const [data, setData] = useState<ChartData<"line">>({
@@ -71,8 +62,9 @@ export default function ExpenseChart() {
   if (!data || loading) return <p>Ładowanie...</p>;
 
   return (
-    <div className="w-full h-64 bg-gray-900 p-4 rounded-2xl shadow-md">
+    <div className="w-full  bg-gray-900 p-4 rounded-2xl shadow-md">
       <Line
+        className={"m-auto w-full"}
         data={data}
         options={{
           responsive: true,

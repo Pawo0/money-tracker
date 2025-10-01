@@ -21,7 +21,7 @@ function Container({
           'max-w-md': size === 'md',
           'max-w-xl': size === 'xl',
           'max-w-none': size === 'full',
-          'max-w-md md:max-w-xl xl:max-w-2xl' : size === 'auto'
+          'max-w-sm sm:max-w-md md:max-w-xl xl:max-w-2xl' : size === 'auto'
         },
         className
       )}
