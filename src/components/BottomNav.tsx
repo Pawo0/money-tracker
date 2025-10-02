@@ -25,7 +25,7 @@ export default function BottomNav() {
               <Link
                 href={href}
                 className={cn(
-                  "flex flex-col items-center text-sm text-gray-200 cursor-pointer px-3 py-1.5",
+                  "flex flex-col items-center text-sm text-gray-200 cursor-pointer px-3 py-1.5 min-w-24",
                   isActive && "font-semibold bg-gray-500 rounded-lg"
                 )}
               >
