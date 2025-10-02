@@ -15,7 +15,7 @@ export default function LatestTransaction({amount = 5}: { amount?: number }) {
       </>
     )
   }
-  const latest = expenses.slice(0, amount)
+  const latest = expenses.slice(-amount).reverse();
   const elements = latest.map((transaction) => {
 
   const formatted = format(new Date(transaction.date), "dd MMM yyyy", { locale: pl })

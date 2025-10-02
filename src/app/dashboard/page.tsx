@@ -1,11 +1,33 @@
-"use client";
+import ExpenseChart from "@/components/ExpenseChart";
+import {auth} from "@/auth"
+import type { Session } from "next-auth";
+import LatestTransaction from "@/components/LatestTransactions";
+import AccountSummary from "@/components/AccountSummary";
 
-import GoogleButton  from "@/components/GoogleButton";
+export default async function DashboardPage() {
+  const session: Session | null = await auth();
+  if (!session){
+    return <main>
+      You have to be logged
+    </main>
+  }
 
-export default function Dashboard() {
+  const user = session.user
   return (
-    <div>
-      <GoogleButton />
-    </div>
-  )
+    <main className="w-full">
+      <h1 className="text-xl font-semibold">Dobry wieczór, {user?.name}</h1>
+
+      <div className="mt-6 flex flex-col gap-4">
+        {/* Sekcja konta */}
+        <AccountSummary />
+
+        {/* Wykres */}
+        <ExpenseChart />
+
+        {/* Ostatnie transakcje */}
+        <LatestTransaction />
+
+      </div>
+    </main>
+  );
 }
