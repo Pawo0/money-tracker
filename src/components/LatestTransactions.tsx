@@ -34,7 +34,7 @@ export default function LatestTransaction({amount = 5}: { amount?: number }) {
     <>
       <div className={"flex flex-col gap-4"}>
         {elements}
-        <Button variant={"secondary"} className={"text-center"} href={"/history"}>See full history</Button>
+        <Button variant={"secondary"} className={"text-center w-3/4 mx-auto"} href={"/history"}>See full history</Button>
       </div>
     </>
   )
