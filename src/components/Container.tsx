@@ -15,7 +15,7 @@ function Container({
   return (
     <section
       className={cn(
-        "min-h-screen flex justify-center mx-auto px-4 sm:px-6 lg:px-8",
+        "bg-black/70 rounded-2xl min-h-screen flex justify-center mx-auto p-4 sm:p-6 lg:p-8",
         {
           'max-w-sm': size === 'sm',
           'max-w-md': size === 'md',

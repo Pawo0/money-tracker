@@ -1,5 +1,6 @@
-import Button from "@/components/Button/Button";
+import Button from "@/components/Button";
 import Link from "next/link";
+import GoogleButton from "@/components/GoogleButton";
 
 export default function Home() {
   return (
@@ -12,9 +13,11 @@ export default function Home() {
           Track your expenses and manage your budget
         </p>
         <div className="space-x-4">
-          <Button variant={"secondary"} href={"/dashboard"}>
-              Dashboard
+          <Button variant={"primary"} href={"/dashboard"} onlyForUsers>
+            Dashboard
           </Button>
+
+          <GoogleButton variant={"secondary"}/>
         </div>
       </div>
     </main>

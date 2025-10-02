@@ -14,7 +14,7 @@ export default async function DashboardPage() {
 
   const user = session.user
   return (
-    <main className="bg-black/80 rounded-2xl p-6 w-full">
+    <main className="w-full">
       <h1 className="text-xl font-semibold">Dobry wieczór, {user?.name}</h1>
 
       <div className="mt-6 flex flex-col gap-4">

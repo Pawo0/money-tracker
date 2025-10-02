@@ -1,7 +1,7 @@
 "use client"
 
 import useExpenses from "@/hooks/useExpenses";
-import {Button} from "@/components/Button";
+import Button from "@/components/Button";
 import { format } from "date-fns"
 import { pl } from "date-fns/locale"
 

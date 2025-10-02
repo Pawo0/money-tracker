@@ -1,6 +1,6 @@
 "use client";
 
-import { GoogleButton } from "@/components/Button/index";
+import GoogleButton  from "@/components/GoogleButton";
 
 export default function Dashboard() {
   return (
