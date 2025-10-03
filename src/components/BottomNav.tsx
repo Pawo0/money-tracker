@@ -22,16 +22,16 @@ export default function BottomNav() {
           {navItems.map(({href, label, icon: Icon}) => {
             const isActive = pathname === href;
             return (
-              <li key={href}>
+              <li key={href} className="flex-1">
                 <Link
                   href={href}
                   className={cn(
-                    "flex flex-col items-center text-sm text-gray-200 cursor-pointer px-3 py-1.5 min-w-24",
+                    "flex flex-col items-center text-sm text-gray-200 cursor-pointer px-3 py-1.5 ",
                     isActive && "font-semibold bg-gray-500 rounded-lg"
                   )}
                 >
                   <Icon className="h-5 w-5 mb-1"/>
-                  {label}
+                  <span className="hidden sm:block">{label}</span>
                 </Link>
               </li>
             );
