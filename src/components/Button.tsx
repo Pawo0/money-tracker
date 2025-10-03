@@ -27,7 +27,7 @@ function Button(
   const isDisabled = onlyForUsers && !isUser;
 
   const classes = cn(
-    "inline-flex px-6 py-3 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer",
+    "inline-flex mx-auto px-6 py-3 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer",
     {
       'border hover:bg-gray-700 text-white bg-gray-800 border-gray-50 focus:ring-gray-500': variant === 'secondary' ,
       'border hover:bg-gray-200 text-gray-800 bg-white border-black focus:ring-gray-500': variant === 'primary' ,

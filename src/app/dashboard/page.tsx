@@ -1,15 +1,14 @@
 import ExpenseChart from "@/components/ExpenseChart";
 import {auth} from "@/auth"
-import type { Session } from "next-auth";
+import type {Session} from "next-auth";
 import LatestTransaction from "@/components/LatestTransactions";
 import AccountSummary from "@/components/AccountSummary";
+import AskToLoginPage from "@/components/AskToLoginPage";
 
 export default async function DashboardPage() {
   const session: Session | null = await auth();
-  if (!session){
-    return <main>
-      You have to be logged
-    </main>
+  if (!session) {
+    return <AskToLoginPage />
   }
 
   const user = session.user
@@ -19,13 +18,13 @@ export default async function DashboardPage() {
 
       <div className="mt-6 flex flex-col gap-4">
         {/* Sekcja konta */}
-        <AccountSummary />
+        <AccountSummary/>
 
         {/* Wykres */}
-        <ExpenseChart />
+        <ExpenseChart/>
 
         {/* Ostatnie transakcje */}
-        <LatestTransaction />
+        <LatestTransaction/>
 
       </div>
     </main>
