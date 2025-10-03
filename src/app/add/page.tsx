@@ -6,6 +6,7 @@ import {BananaIcon} from "lucide-react";
 import type {ExpensesData as InputProps} from "@/types/expenses";
 import {useSession} from "next-auth/react";
 import AskToLoginPage from "@/components/AskToLoginPage";
+import useExpenses from "@/hooks/useExpenses";
 
 export default function Page() {
   const [inputs, setInputs] = useState<InputProps>({
@@ -15,25 +16,23 @@ export default function Page() {
     category: "",
     description: ""
   })
+  const {fetchExpenses} = useExpenses()
 
   const {data: session} = useSession();
-  if (!session){
-    return <AskToLoginPage />
+  if (!session) {
+    return <AskToLoginPage/>
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
-    const {name} = e.target;
-    let {value} = e.target;
+    const {name, value} = e.target;
     if (name === "amount") {
       if (isNaN(Number(value))) return;
-      value = String(Number(value));
     }
     setInputs({
       ...inputs,
-      [name]: value
-    })
-  }
-
+      [name]: name === "amount" ? Number(value) : value
+    });
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await fetch("/api/expenses", {
@@ -51,6 +50,7 @@ export default function Page() {
         category: "",
         description: ""
       })
+      await fetchExpenses()
       alert("Transaction added successfully")
     } else {
       alert("Failed to add transaction")
@@ -66,7 +66,8 @@ export default function Page() {
             <BananaIcon size={"55"}/>
           </button>
           <div className={"flex flex-3"}>
-            <input name={"amount"} type={"text"} placeholder={"0.00"} value={inputs.amount} onChange={handleChange}
+            <input name={"amount"} type={"text"} placeholder={"0.00"} value={inputs.amount === 0 ? "" : inputs.amount}
+                   onChange={handleChange}
                    className={"bg-transparent text-5xl w-full text-right flex-1"}/>
             <span className={"text-3xl content-center px-4 "}>zł</span>
           </div>
@@ -80,7 +81,8 @@ export default function Page() {
 
         <textarea name={"description"} placeholder={"Description"} className={"p-4 rounded-2xl bg-gray-500 text-2xl"}
                   value={inputs.description} onChange={handleChange}/>
-        <button type={"submit"} className={"p-4 rounded-2xl bg-gray-800 text-2xl cursor-pointer "}>Add transaction</button>
+        <button type={"submit"} className={"p-4 rounded-2xl bg-gray-800 text-2xl cursor-pointer "}>Add transaction
+        </button>
 
       </form>
     </>

@@ -10,25 +10,27 @@ export function ExpensesProvider({children}: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const expensesFetch = async function () {
-      try {
-        const res = await fetch("/api/expenses");
-        const data: ExpensesData[] = await res.json();
-        // sort by date
-        const sortedData = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        setExpenses(sortedData)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    expensesFetch()
+    fetchExpenses();
   }, [])
 
+
+  const fetchExpenses = async function () {
+    setLoading(true)
+    try {
+      const res = await fetch("/api/expenses");
+      const data: ExpensesData[] = await res.json();
+      // sort by date
+      const sortedData = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      setExpenses(sortedData)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <ExpensesContext.Provider value={{expenses, loading}}>
+    <ExpensesContext.Provider value={{expenses, loading, fetchExpenses}}>
       {children}
     </ExpensesContext.Provider>
   )

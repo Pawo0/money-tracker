@@ -2,64 +2,44 @@ import client from "@/lib/mongodb";
 import {NextResponse} from "next/server";
 
 export async function GET(req: Request) {
-  const list = [
-    {
-      "_id": "1",
-      "userId": "123",
-      "date": "2025-09-20T12:00:00Z",
-      "amount": -23,
-      "category": "Jedzenie poza domem",
-      "title": "Jedzenie poza domem"
-    },
-    {
-      "_id": "2",
-      "userId": "123",
-      "date": "2025-09-21T12:00:00Z",
-      "amount": -5,
-      "category": "Hot-dog",
-      "title": "Hot-dog"
-    },
-    {
-      "_id": "3",
-      "userId": "123",
-      "date": "2025-09-22T12:00:00Z",
-      "amount": -11,
-      "category": "Kosmetyki",
-      "title": "Kosmetyki"
-    },
-    {
-      "_id": "4",
-      "userId": "123",
-      "date": "2025-09-22T12:00:00Z",
-      "amount": -4,
-      "category": "Rower",
-      "title": "Rower"
-    },
-    {
-      "_id": "5",
-      "userId": "123",
-      "date": "2025-09-16T12:00:00Z",
-      "amount": -51,
-      "category": "Ananas",
-      "title": "Ananas"
-    },
-    {
-      "_id": "6",
-      "userId": "123",
-      "date": "2025-09-28T12:00:00Z",
-      "amount": -12,
-      "category": "Kebab z mąką",
-      "title": "Kebab z mąką"
-    },
-    {
-      "_id": "7",
-      "userId": "123",
-      "date": "2025-09-24T12:00:00Z",
-      "amount": -33,
-      "category": "Płatki z mlekiem",
-      "title": "Płatki z mlekiem"
-    }
-  ]
+  try {
+    const db = client.db("expense-tracker");
+    const expensesCollection = db.collection("expenses");
 
-  return NextResponse.json(list)
+    const expenses = await expensesCollection.find().sort({date: -1}).toArray();
+
+    return NextResponse.json(expenses, {status: 200});
+  } catch (error) {
+    console.error("Error fetching expenses:", error);
+    return NextResponse.json({message: "Internal Server Error"}, {status: 500});
+  }
+  
+}
+
+export async function POST(req: Request) {
+  try {
+    const {date, amount, category, title, description} = await req.json();
+
+    if (!date || !amount || !category || !title) {
+      return NextResponse.json({message: "Missing required fields"}, {status: 400});
+    }
+
+    const db = client.db("expense-tracker");
+    const expensesCollection = db.collection("expenses");
+
+    const newExpense = {
+      date,
+      amount,
+      category,
+      title,
+      description
+    };
+
+    const result = await expensesCollection.insertOne(newExpense);
+
+    return NextResponse.json({...newExpense, _id: result.insertedId}, {status: 201});
+  } catch (error) {
+    console.error("Error adding expense:", error);
+    return NextResponse.json({message: "Internal Server Error"}, {status: 500});
+  }
 }

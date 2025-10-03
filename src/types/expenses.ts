@@ -10,5 +10,6 @@ export interface ExpensesData {
 
 export interface ExpensesContextInterface{
   expenses: ExpensesData[];
-  loading: boolean
+  loading: boolean;
+  fetchExpenses: () => Promise<void>;
 }
