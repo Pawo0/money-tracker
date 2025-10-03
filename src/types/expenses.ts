@@ -1,10 +1,11 @@
 export interface ExpensesData {
-  _id: string;
-  userId: string;
+  _id?: string;
+  userId?: string;
   date: string;
   amount: number;
   category: string;
-  title: string
+  title: string;
+  description?: string;
 }
 
 export interface ExpensesContextInterface{
