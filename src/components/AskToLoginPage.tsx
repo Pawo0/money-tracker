@@ -5,7 +5,7 @@ export default function AskToLoginPage() {
   return (
     <>
       <Alert message={"You have to be logged in to view this page"} type="error"/>
-      <GoogleButton/>
+      <GoogleButton className={"mx-auto"} />
     </>
   )
 }
