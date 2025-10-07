@@ -2,11 +2,13 @@
 
 
 import React, {useState} from "react";
-import {BananaIcon} from "lucide-react";
+import {Banana, BananaIcon, Bus, Gamepad2} from "lucide-react";
 import type {ExpensesData as InputProps} from "@/types/expenses";
 import {useSession} from "next-auth/react";
 import AskToLoginPage from "@/components/AskToLoginPage";
 import useExpenses from "@/hooks/useExpenses";
+import useModal from "@/hooks/useModal";
+import {CategoryModal} from "@/components/CategoryModal";
 
 export default function Page() {
   const [inputs, setInputs] = useState<InputProps>({
@@ -16,7 +18,15 @@ export default function Page() {
     category: "",
     description: ""
   })
+
+  const categories = [
+  { name: "Jedzenie", icon: Banana, color: "yellow", slug: "food" },
+  { name: "Transport", icon: Bus, color: "blue", slug: "transport" },
+  { name: "Rozrywka", icon: Gamepad2, color: "purple", slug: "entertainment" },
+];
+
   const {fetchExpenses} = useExpenses()
+  const {openModal: open, closeModal: close, isOpen} = useModal()
 
   const {data: session} = useSession();
   if (!session) {
@@ -61,27 +71,29 @@ export default function Page() {
     <>
       <h1>Add transaction</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className={"flex bg-gray-500 p-4 rounded-2xl"}>
+        <div className={"flex bg-gray-500 pr-4 rounded-2xl"}>
 
           <button
-            className={"flex-1 flex content-center justify-center"}
+            className={"flex-1 flex py-4 content-center justify-center border-r border-gray-400 rounded-l-2xl cursor-pointer hover:bg-gray-400"}
+            type={"button"}
+            onClick={open}
           >
             <BananaIcon size={"55"}/>
           </button>
 
-          <div className={"flex flex-3"}>
+          <div className={"flex flex-3 mx-2 p-4"}>
             <input
               name={"amount"}
               type={"text"}
               placeholder={"0.00"}
               value={inputs.amount === 0 ? "" : inputs.amount}
               onChange={handleChange}
-              className={"bg-transparent text-5xl w-full text-right flex-1"}
+              className={"text-5xl w-full text-right flex-1 focus:outline-hidden"}
               autoComplete={"off"}
             />
-            <span className={"text-3xl content-center px-4 "}>
+            <label htmlFor={"amount"} className={"text-3xl content-center px-4"}>
               zł
-            </span>
+            </label>
           </div>
         </div>
 
@@ -127,6 +139,15 @@ export default function Page() {
         >
           Add transaction
         </button>
+
+        <CategoryModal
+          categories={categories}
+          isOpen={isOpen}
+          onCloseAction={close}
+          onSelectAction={(cat) => {
+          setInputs({...inputs, category: cat})
+          close()
+        }}/>
 
       </form>
     </>
