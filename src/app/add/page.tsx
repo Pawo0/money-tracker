@@ -62,26 +62,70 @@ export default function Page() {
       <h1>Add transaction</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className={"flex bg-gray-500 p-4 rounded-2xl"}>
-          <button className={"flex-1 flex content-center justify-center"}>
+
+          <button
+            className={"flex-1 flex content-center justify-center"}
+          >
             <BananaIcon size={"55"}/>
           </button>
+
           <div className={"flex flex-3"}>
-            <input name={"amount"} type={"text"} placeholder={"0.00"} value={inputs.amount === 0 ? "" : inputs.amount}
-                   onChange={handleChange}
-                   className={"bg-transparent text-5xl w-full text-right flex-1"}/>
-            <span className={"text-3xl content-center px-4 "}>zł</span>
+            <input
+              name={"amount"}
+              type={"text"}
+              placeholder={"0.00"}
+              value={inputs.amount === 0 ? "" : inputs.amount}
+              onChange={handleChange}
+              className={"bg-transparent text-5xl w-full text-right flex-1"}
+              autoComplete={"off"}
+            />
+            <span className={"text-3xl content-center px-4 "}>
+              zł
+            </span>
           </div>
         </div>
-        <input type={"date"} name={"date"} className={"p-4 rounded-2xl bg-gray-500 text-2xl w-full"}
-               value={inputs.date} onChange={handleChange}/>
-        <input type={"text"} name={"title"} placeholder={"Title"} className={"p-4 rounded-2xl bg-gray-500 text-2xl"}
-               value={inputs.title} onChange={handleChange}/>
-        <input type={"text"} name={"category"} placeholder={"Category"}
-               className={"p-4 rounded-2xl bg-gray-500 text-2xl"} value={inputs.category} onChange={handleChange}/>
 
-        <textarea name={"description"} placeholder={"Description"} className={"p-4 rounded-2xl bg-gray-500 text-2xl"}
-                  value={inputs.description} onChange={handleChange}/>
-        <button type={"submit"} className={"p-4 rounded-2xl bg-gray-800 text-2xl cursor-pointer "}>Add transaction
+        <input
+          type={"date"}
+          name={"date"}
+          className={"p-4 rounded-2xl bg-gray-500 text-2xl w-full"}
+          value={inputs.date}
+          onChange={handleChange}
+        />
+
+        <input
+          type={"text"}
+          name={"title"}
+          placeholder={"Title"}
+          className={"p-4 rounded-2xl bg-gray-500 text-2xl"}
+          value={inputs.title}
+          onChange={handleChange}
+          autoComplete={"off"}
+        />
+
+        <input
+          type={"text"}
+          name={"category"}
+          placeholder={"Category"}
+          className={"p-4 rounded-2xl bg-gray-500 text-2xl"}
+          value={inputs.category}
+          onChange={handleChange}
+        />
+
+
+        <textarea
+          name={"description"}
+          placeholder={"Description"}
+          className={"p-4 rounded-2xl bg-gray-500 text-2xl"}
+          value={inputs.description}
+          onChange={handleChange}
+        />
+
+        <button
+          type={"submit"}
+          className={"p-4 rounded-2xl bg-green-600 text-2xl cursor-pointer "}
+        >
+          Add transaction
         </button>
 
       </form>
