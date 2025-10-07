@@ -1,23 +1,28 @@
 import client from "@/lib/mongodb";
 import {NextResponse} from "next/server";
+import {auth} from "@/auth"
 
 export async function GET(req: Request) {
   try {
+    const session = await auth();
+    const { id: userId } = session?.user || {};
     const db = client.db("expense-tracker");
     const expensesCollection = db.collection("expenses");
 
-    const expenses = await expensesCollection.find().sort({date: -1}).toArray();
+    const expenses = await expensesCollection.find({userId}).sort({date: -1}).toArray();
 
     return NextResponse.json(expenses, {status: 200});
   } catch (error) {
     console.error("Error fetching expenses:", error);
     return NextResponse.json({message: "Internal Server Error"}, {status: 500});
   }
-  
+
 }
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    const { id: userId } = session?.user || {};
     const {date, amount, category, title, description} = await req.json();
 
     if (!date || !amount || !category || !title) {
@@ -28,6 +33,7 @@ export async function POST(req: Request) {
     const expensesCollection = db.collection("expenses");
 
     const newExpense = {
+      userId,
       date,
       amount,
       category,
