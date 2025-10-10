@@ -1,9 +1,11 @@
+import type {Categories} from "@/types/categories";
+
 export interface ExpensesData {
   _id?: string;
   userId?: string;
   date: string;
   amount: number;
-  category: string;
+  categoryId: string;
   title: string;
   description?: string;
 }
@@ -11,7 +13,7 @@ export interface ExpensesData {
 export interface ExpensesInputData {
   date: string;
   amount: string;
-  category: string;
+  category: Categories | null;
   title: string;
   description?: string;
 }

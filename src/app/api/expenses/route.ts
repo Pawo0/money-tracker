@@ -1,6 +1,7 @@
 import client from "@/lib/mongodb";
 import {NextResponse} from "next/server";
 import {auth} from "@/auth"
+import {ExpensesData} from "@/types/expenses";
 
 export async function GET(req: Request) {
   try {
@@ -23,9 +24,9 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     const { id: userId } = session?.user || {};
-    const {date, amount, category, title, description} = await req.json();
+    const {date, amount, categoryId, title, description}:ExpensesData = await req.json();
 
-    if (!date || !amount || !category || !title) {
+    if (!date || !amount || !categoryId || !title) {
       return NextResponse.json({message: "Missing required fields"}, {status: 400});
     }
 
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
       userId,
       date,
       amount,
-      category,
+      categoryId,
       title,
       description
     };

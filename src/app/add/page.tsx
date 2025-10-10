@@ -2,28 +2,23 @@
 
 
 import React, {useState} from "react";
-import {Banana, BananaIcon, Bus, Gamepad2} from "lucide-react";
 import type {ExpensesInputData as InputProps} from "@/types/expenses";
 import {useSession} from "next-auth/react";
 import AskToLoginPage from "@/components/AskToLoginPage";
 import useExpenses from "@/hooks/useExpenses";
 import useModal from "@/hooks/useModal";
 import CategoryModal from "@/components/CategoryModal";
+import CurrentCategoryIcon from "@/components/CurrentCategoryIcon";
 
 export default function Page() {
   const [inputs, setInputs] = useState<InputProps>({
     date: new Date().toISOString().split("T")[0],
     amount: "",
     title: "",
-    category: "",
+    category: null,
     description: ""
   })
 
-  const categories = [
-  { name: "Jedzenie", icon: Banana, color: "yellow", slug: "food" },
-  { name: "Transport", icon: Bus, color: "blue", slug: "transport" },
-  { name: "Rozrywka", icon: Gamepad2, color: "purple", slug: "entertainment" },
-];
 
   const {fetchExpenses} = useExpenses()
   const {openModal: open, closeModal: close, isOpen} = useModal()
@@ -58,6 +53,7 @@ export default function Page() {
     const amount = parseFloat(inputs.amount || "0");
     const payload = {
       ...inputs,
+      categoryId: inputs.category?._id || "Uncategorized",
       amount: amount
     }
     const res = await fetch("/api/expenses", {
@@ -72,7 +68,7 @@ export default function Page() {
         date: new Date().toISOString().split("T")[0],
         amount: "",
         title: "",
-        category: "",
+        category: null,
         description: ""
       })
       await fetchExpenses()
@@ -93,7 +89,7 @@ export default function Page() {
             type={"button"}
             onClick={open}
           >
-            <BananaIcon size={"55"}/>
+            <CurrentCategoryIcon categoryName={inputs.category?.icon} size={55}/>
           </button>
 
           <div className={"flex flex-3 mx-2 p-4"}>
@@ -135,7 +131,7 @@ export default function Page() {
           name={"category"}
           placeholder={"Category"}
           className={"p-4 rounded-2xl bg-gray-500 text-2xl"}
-          value={inputs.category}
+          value={inputs.category?.name}
           onChange={handleChange}
         />
 
@@ -158,7 +154,10 @@ export default function Page() {
         <CategoryModal
           isOpen={isOpen}
           onCloseAction={close}
-          onSelectAction={(category) => setInputs({...inputs, category: category.name})}
+          onSelectAction={(category) => setInputs({
+            ...inputs,
+            category
+          })}
         />
 
       </form>
