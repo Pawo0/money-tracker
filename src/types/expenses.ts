@@ -8,6 +8,14 @@ export interface ExpensesData {
   description?: string;
 }
 
+export interface ExpensesInputData {
+  date: string;
+  amount: string;
+  category: string;
+  title: string;
+  description?: string;
+}
+
 export interface ExpensesContextInterface{
   expenses: ExpensesData[];
   loading: boolean;

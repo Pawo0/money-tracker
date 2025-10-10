@@ -3,7 +3,7 @@
 
 import React, {useState} from "react";
 import {Banana, BananaIcon, Bus, Gamepad2} from "lucide-react";
-import type {ExpensesData as InputProps} from "@/types/expenses";
+import type {ExpensesInputData as InputProps} from "@/types/expenses";
 import {useSession} from "next-auth/react";
 import AskToLoginPage from "@/components/AskToLoginPage";
 import useExpenses from "@/hooks/useExpenses";
@@ -13,7 +13,7 @@ import CategoryModal from "@/components/CategoryModal";
 export default function Page() {
   const [inputs, setInputs] = useState<InputProps>({
     date: new Date().toISOString().split("T")[0],
-    amount: 0,
+    amount: "",
     title: "",
     category: "",
     description: ""
@@ -33,29 +33,44 @@ export default function Page() {
     return <AskToLoginPage/>
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const {name, value} = e.target;
+
     if (name === "amount") {
-      if (isNaN(Number(value))) return;
+      const normalizedValue = value.replace(",", ".");
+
+      // Number with up to two decimal places
+      const regex = /^\d*\.?\d{0,2}$/;
+
+      if (!regex.test(normalizedValue)) return;
+
+      setInputs({...inputs, amount: normalizedValue});
+      return;
     }
-    setInputs({
-      ...inputs,
-      [name]: name === "amount" ? Number(value) : value
-    });
+
+    setInputs({...inputs, [name]: value});
   };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const amount = parseFloat(inputs.amount || "0");
+    const payload = {
+      ...inputs,
+      amount: amount
+    }
     const res = await fetch("/api/expenses", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(inputs)
+      body: JSON.stringify(payload)
     })
     if (res.ok) {
       setInputs({
         date: new Date().toISOString().split("T")[0],
-        amount: 0,
+        amount: "",
         title: "",
         category: "",
         description: ""
@@ -86,7 +101,7 @@ export default function Page() {
               name={"amount"}
               type={"text"}
               placeholder={"0.00"}
-              value={inputs.amount === 0 ? "" : inputs.amount}
+              value={inputs.amount}
               onChange={handleChange}
               className={"text-5xl w-full text-right flex-1 focus:outline-hidden"}
               autoComplete={"off"}
@@ -144,7 +159,7 @@ export default function Page() {
           isOpen={isOpen}
           onCloseAction={close}
           onSelectAction={(category) => setInputs({...inputs, category: category.name})}
-          />
+        />
 
       </form>
     </>
