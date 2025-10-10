@@ -1,49 +1,71 @@
 "use client";
-import {X} from "lucide-react";
+
+import React from "react";
+import { getIconByName } from "@/lib/utils";
+import useCategories from "@/hooks/useCategories";
+import { motion, AnimatePresence } from "framer-motion";
 import {Categories} from "@/types/categories";
 
-export function CategoryModal(
-  {
-    categories,
-    isOpen,
-    onCloseAction,
-    onSelectAction,
-  }: {
-    categories: Categories[];
-    isOpen: boolean;
-    onCloseAction: () => void;
-    onSelectAction: (cat: string) => void;
-  }) {
-  if (!isOpen) return null;
+interface CategoryModalProps {
+  isOpen: boolean;
+  onCloseAction: () => void;
+  onSelectAction: (category: Categories) => void;
+}
+
+export default function CategoryModal({ isOpen, onCloseAction, onSelectAction }: CategoryModalProps) {
+  const { categories, isLoading } = useCategories();
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-2xl p-6 w-80 relative">
-        <button
-          onClick={onCloseAction}
-          className="absolute top-3 right-3 text-gray-400 hover:text-white"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
-          <X size={24}/>
-        </button>
+          <motion.div
+            className="bg-gray-800 text-white rounded-2xl p-6 max-w-md w-full mx-4"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+          >
+            <h2 className="text-xl font-semibold mb-4 text-center">Select category</h2>
 
-        <h2 className="text-lg font-semibold mb-4 text-center">
-          Choose a category
-        </h2>
+            {isLoading ? (
+              <p className="text-center text-gray-400">Loading...</p>
+            ) : (
+              <div className="grid grid-cols-3 gap-4">
+                {categories.map((cat: Categories) => {
+                  const Icon = getIconByName(cat.icon);
+                  return (
+                    <button
+                      type={"button"}
+                      key={cat.baseId || cat._id}
+                      className="flex flex-col items-center bg-gray-700 p-3 rounded-xl hover:bg-gray-600 transition cursor-pointer"
+                      onClick={() => {
+                        onSelectAction(cat);
+                        onCloseAction();
+                      }}
+                    >
+                      <Icon className="mb-1" color={cat.color} size={28} />
+                      <span className="text-sm text-gray-100 truncate">{cat.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
-        <ul className="grid grid-cols-2 gap-3">
-          {categories.map(({name, icon: Icon}) => (
-            <li key={name}>
-              <button
-                onClick={() => onSelectAction(name)}
-                className="flex flex-col items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-xl p-3 w-full"
-              >
-                <Icon className="w-8 h-8 mb-2 text-white"/>
-                <span className="text-white text-sm">{name}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+            <button
+              type={"button"}
+              onClick={onCloseAction}
+              className="mt-6 w-full bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-xl cursor-pointer"
+            >
+              Close
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

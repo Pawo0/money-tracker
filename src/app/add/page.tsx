@@ -8,7 +8,7 @@ import {useSession} from "next-auth/react";
 import AskToLoginPage from "@/components/AskToLoginPage";
 import useExpenses from "@/hooks/useExpenses";
 import useModal from "@/hooks/useModal";
-import {CategoryModal} from "@/components/CategoryModal";
+import CategoryModal from "@/components/CategoryModal";
 
 export default function Page() {
   const [inputs, setInputs] = useState<InputProps>({
@@ -141,13 +141,10 @@ export default function Page() {
         </button>
 
         <CategoryModal
-          categories={categories}
           isOpen={isOpen}
           onCloseAction={close}
-          onSelectAction={(cat) => {
-          setInputs({...inputs, category: cat})
-          close()
-        }}/>
+          onSelectAction={(category) => setInputs({...inputs, category: category.name})}
+          />
 
       </form>
     </>
