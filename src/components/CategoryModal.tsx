@@ -15,6 +15,12 @@ interface CategoryModalProps {
 export default function CategoryModal({ isOpen, onCloseAction, onSelectAction }: CategoryModalProps) {
   const { categories, isLoading } = useCategories();
 
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onCloseAction();
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -23,12 +29,14 @@ export default function CategoryModal({ isOpen, onCloseAction, onSelectAction }:
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={handleBackdropClick}
         >
           <motion.div
             className="bg-gray-800 text-white rounded-2xl p-6 max-w-md w-full mx-4"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()} // zatrzymuje kliknięcia wewnątrz modala
           >
             <h2 className="text-xl font-semibold mb-4 text-center">Select category</h2>
 
