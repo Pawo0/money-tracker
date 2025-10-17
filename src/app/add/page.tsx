@@ -9,6 +9,8 @@ import useExpenses from "@/hooks/useExpenses";
 import useModal from "@/hooks/useModal";
 import CategoryModal from "@/components/CategoryModal";
 import CurrentCategoryIcon from "@/components/CurrentCategoryIcon";
+import {cn} from "@/lib/utils";
+import {ArrowDown} from "lucide-react";
 
 export default function Page() {
   const [inputs, setInputs] = useState<InputProps>({
@@ -116,6 +118,25 @@ export default function Page() {
           onChange={handleChange}
         />
 
+        <button
+          name={"category"}
+          className={
+            cn("p-4 rounded-2xl bg-gray-500 text-2xl text-left flex justify-between items-center cursor-pointer",
+              !inputs.category && "text-gray-400"
+            )
+          }
+          value={inputs.category?.name}
+          type={"button"}
+          onClick={open}
+        >
+          <span className={""}>
+            {inputs.category ? inputs.category.name : "Select category"}
+          </span>
+          <span className={""}>
+            <ArrowDown color={"#c3c7cd"}/>
+          </span>
+        </button>
+
         <input
           type={"text"}
           name={"title"}
@@ -124,15 +145,6 @@ export default function Page() {
           value={inputs.title}
           onChange={handleChange}
           autoComplete={"off"}
-        />
-
-        <input
-          type={"text"}
-          name={"category"}
-          placeholder={"Category"}
-          className={"p-4 rounded-2xl bg-gray-500 text-2xl"}
-          value={inputs.category?.name}
-          onChange={handleChange}
         />
 
 
