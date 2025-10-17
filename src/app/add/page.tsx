@@ -52,7 +52,8 @@ export default function Page() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const amount = parseFloat(inputs.amount || "0");
+    const amount = parseFloat(inputs.amount || "0") * -1; // For now, we assume all transactions are expenses
+
     const payload = {
       ...inputs,
       categoryId: inputs.category?._id || "Uncategorized",
@@ -150,7 +151,7 @@ export default function Page() {
 
         <textarea
           name={"description"}
-          placeholder={"Description"}
+          placeholder={"Description (optional)"}
           className={"p-4 rounded-2xl bg-gray-500 text-2xl"}
           value={inputs.description}
           onChange={handleChange}
