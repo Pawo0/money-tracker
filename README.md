@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Expense Tracker App
 
-## Getting Started
+`Disclaimer: This project is still under active development. Some features are incomplete or may change in the future.`
 
-First, run the development server:
+A simple expense tracking web application that allows users to log in with their Google account, track their spending, categorize expenses, and store everything securely in a cloud database.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Live Demo
+Vercel Deployment: https://money-tracker-qev1.vercel.app/
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Google login via NextAuth
+- Secure storage in MongoDB using the user session ID
+- Adding expenses with category, description, and price
+- Nice view of existing expenses with help react-chartjs-2
+- Icons and colors for category visualization
+- Smooth animations using Framer Motion
+- Real-time revalidation using SWR
+- Responsive UI styled with Tailwind CSS
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech stack
 
-## Learn More
+| Area           | Technology                                   |
+| -------------- | -------------------------------------------- |
+| Framework      | **Next.js (App Router)**                     |
+| Language       | **TypeScript**                               |
+| Authentication | **NextAuth (Google Provider)**               |
+| Database       | **MongoDB**                                  |
+| API            | **Next.js API Routes**                       |
+| Styling        | **Tailwind CSS**                             |
+| Animations     | **Framer Motion**                            |
+| Data fetching  | **SWR**                                      |
 
-To learn more about Next.js, take a look at the following resources:
+## Preview Screenshots
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<img width="460" height="1024" alt="Adding new expense" src="https://github.com/user-attachments/assets/4342101a-3cc0-41e6-94ca-611aec1b32a4" />
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<img width="460" height="1024" alt="Choosing a category" src="https://github.com/user-attachments/assets/86cce60c-79a4-4e7f-bd7a-8d3aa5238c89" />
 
-## Deploy on Vercel
+<img width="460" height="1024" alt="Dasboard" src="https://github.com/user-attachments/assets/a7b8d466-73c8-4ced-8c6a-23d55f2bad09" />
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
