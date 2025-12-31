@@ -15,9 +15,9 @@ export default function AccountSummary(){
 
   return (
     <div className="p-4 bg-gray-800 rounded-2xl">
-      <p className="text-sm text-gray-400">Bank</p>
-      <p className="text-2xl font-bold">{totalAmount} zł</p>
-      <p className="text-xs text-gray-400">{transactionCount} transakcji</p>
+      <p className="text-sm text-gray-400">Wallet</p>
+      <p className="text-2xl font-bold">{totalAmount.toFixed(2)} zł</p>
+      <p className="text-xs text-gray-400">{transactionCount} transactions</p>
     </div>
   )
 }
