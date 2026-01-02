@@ -1,11 +1,11 @@
 import ExpenseChart from "@/components/ExpenseChart";
 import {auth} from "@/auth"
 import type {Session} from "next-auth";
-import LatestTransaction from "@/components/LatestTransactions";
 import AccountSummary from "@/components/AccountSummary";
 import AskToLoginPage from "@/components/AskToLoginPage";
 import {DashboardMonthProvider} from "@/context/DashboardMonthContext";
 import MonthPicker from "@/components/MonthPicker";
+import DashboardLatestTransactions from "@/components/DashboardLatestTransactions";
 
 export default async function DashboardPage() {
   const session: Session | null = await auth();
@@ -26,7 +26,7 @@ export default async function DashboardPage() {
 
           <ExpenseChart/>
 
-          <LatestTransaction/>
+          <DashboardLatestTransactions/>
 
         </div>
       </DashboardMonthProvider>

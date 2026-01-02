@@ -1,28 +1,15 @@
-"use client"
-
-import useExpenses from "@/hooks/useExpenses";
 import Button from "@/components/Button";
 import TransactionBlock from "@/components/TransactionBlock";
+import {ExpensesData} from "@/types/expenses";
 
-export default function LatestTransaction({showAll, amount = 5}: { amount?: number, showAll?: boolean }) {
-  const {expenses, loading} = useExpenses();
+type LatestTransactionProps = {
+  expenses: ExpensesData[];
+  limit?: number;
+}
 
-  if (loading) {
-    return (
-      <>
-        <p>Loading...</p>
-      </>
-    )
-  }
-  let latest;
-
-  if (showAll) {
-    latest = expenses.slice().reverse();
-  } else {
-    latest = expenses.slice(-amount).reverse();
-  }
-
-  const elements = latest.map((transaction) => {
+export default function LatestTransaction({expenses, limit}: LatestTransactionProps) {
+  const items = limit ? expenses.slice(0, limit) : expenses;
+  const elements = items.map((transaction) => {
     return <TransactionBlock transaction={transaction} key={transaction._id}/>
   })
 
@@ -31,7 +18,7 @@ export default function LatestTransaction({showAll, amount = 5}: { amount?: numb
       <div className={"flex flex-col gap-4"}>
         {elements}
         {
-          !showAll &&
+          !!limit &&
             <Button variant={"secondary"} className={"text-center w-3/4 mx-auto"} href={"/history"}>
                 See full history
             </Button>

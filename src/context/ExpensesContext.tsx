@@ -19,9 +19,7 @@ export function ExpensesProvider({children}: { children: React.ReactNode }) {
     try {
       const res = await fetch("/api/expenses");
       const data: ExpensesData[] = await res.json();
-      // sort by date
-      const sortedData = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      setExpenses(sortedData)
+      setExpenses(data)
     } catch (e) {
       console.error(e)
     } finally {
