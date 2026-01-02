@@ -1,10 +1,9 @@
-import {format} from "date-fns";
-import {pl} from "date-fns/locale";
 import type {ExpensesData} from "@/types/expenses";
 import Link from "next/link";
+import {dayKey} from "@/lib/utlis/date";
 
 export default function TransactionBlock({transaction}: { transaction: ExpensesData }) {
-  const formatted_date = format(new Date(transaction.date), "dd MMM yyyy", {locale: pl})
+  const formatted_date = dayKey(new Date(transaction.date))
   return (
     <Link
       className="p-4 bg-gray-800 rounded-2xl text-left w-full cursor-pointer hover:bg-gray-700 transition-colors"

@@ -15,8 +15,10 @@ import {
 import type {ChartData} from "chart.js";
 
 import {Line} from "react-chartjs-2";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import useExpenses from "@/hooks/useExpenses";
+import useDashboardMonth from "@/hooks/useDashboardMonth";
+import {endOfMonth, sameMonth, startOfMonth, dayKey} from "@/lib/utlis/date";
 
 ChartJS.register(
   CategoryScale,
@@ -29,65 +31,9 @@ ChartJS.register(
   Filler,
 );
 
-function pad2(n: number) {
-  return String(n).padStart(2, "0");
-}
-
-function monthKey(date: Date) {
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}`;
-}
-
-function dayKey(date: Date) {
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
-}
-
-function startOfMonth(month: string) {
-  const [y, m] = month.split("-").map(Number);
-  return new Date(y, (m ?? 1) - 1, 1, 0, 0, 0, 0);
-}
-
-function endOfMonth(month: string) {
-  const [y, m] = month.split("-").map(Number);
-  // day 0 of next month = last day of current month
-  return new Date(y, (m ?? 1), 0, 23, 59, 59, 999);
-}
-
-function sameMonth(a: Date, month: string) {
-  return monthKey(a) === month;
-}
-
-function formatMonthLabel(month: string) {
-  const [y, m] = month.split("-").map(Number);
-  const exp_date = new Date(y, (m ?? 1) - 1, 1);
-  return exp_date.toLocaleDateString("en-EN", {month: "long", year: "numeric"});
-}
-
 export default function ExpenseChart() {
   const {expenses, loading} = useExpenses()
-
-  const availableMonths = useMemo(() => {
-    const set = new Set<string>();
-    for (const exp of expenses) {
-      const exp_date = new Date(exp.date);
-      if (!Number.isNaN(exp_date.getTime())) {
-        set.add(monthKey(exp_date));
-      }
-    }
-
-    // fallback: pokaż przynajmniej bieżący miesiąc, nawet jak brak wydatków
-    set.add(monthKey(new Date()));
-
-    return Array.from(set).sort();
-  }, [expenses]);
-
-  const [selectedMonth, setSelectedMonth] = useState<string>(() => monthKey(new Date()));
-
-  // jeżeli wpadną dane i aktualnie wybrany miesiąc nie istnieje na liście, ustaw na ostatni (najnowszy)
-  useEffect(() => {
-    if (!availableMonths.length) return;
-    if (availableMonths.includes(selectedMonth)) return;
-    setSelectedMonth(availableMonths[availableMonths.length - 1]);
-  }, [availableMonths, selectedMonth]);
+  const {selectedMonth} = useDashboardMonth();
 
   const [data, setData] = useState<ChartData<"line">>({
     labels: [],
@@ -156,27 +102,6 @@ export default function ExpenseChart() {
 
   return (
     <div className="w-full bg-gray-900 p-4 rounded-2xl shadow-md ">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-sm text-gray-400">Expenses for the month</p>
-          <p className="truncate text-base font-semibold text-gray-100">{formatMonthLabel(selectedMonth)}</p>
-        </div>
-
-        <label className="flex items-center gap-2 text-sm text-gray-300">
-          <span className="sr-only">Select month</span>
-          <select
-            className="rounded-md bg-gray-800 px-3 py-2 text-sm text-gray-100 ring-1 ring-white/10"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            {[...availableMonths].reverse().map((m) => (
-              <option key={m} value={m}>
-                {formatMonthLabel(m)}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
 
       <div className="w-full h-64">
         <Line

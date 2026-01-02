@@ -4,6 +4,8 @@ import type {Session} from "next-auth";
 import LatestTransaction from "@/components/LatestTransactions";
 import AccountSummary from "@/components/AccountSummary";
 import AskToLoginPage from "@/components/AskToLoginPage";
+import {DashboardMonthProvider} from "@/context/DashboardMonthContext";
+import MonthPicker from "@/components/MonthPicker";
 
 export default async function DashboardPage() {
   const session: Session | null = await auth();
@@ -16,17 +18,18 @@ export default async function DashboardPage() {
     <main className="w-full">
       <h1 className="text-xl font-semibold">Dobry wieczór, {user?.name}</h1>
 
-      <div className="mt-6 flex flex-col gap-4">
-        {/* Sekcja konta */}
-        <AccountSummary/>
+      <DashboardMonthProvider>
+        <div className="mt-6 flex flex-col gap-4">
+          <MonthPicker/>
 
-        {/* Wykres */}
-        <ExpenseChart/>
+          <AccountSummary/>
 
-        {/* Ostatnie transakcje */}
-        <LatestTransaction/>
+          <ExpenseChart/>
 
-      </div>
+          <LatestTransaction/>
+
+        </div>
+      </DashboardMonthProvider>
     </main>
   );
 }
