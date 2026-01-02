@@ -15,7 +15,7 @@ import {
 import type {ChartData} from "chart.js";
 
 import {Line} from "react-chartjs-2";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import useExpenses from "@/hooks/useExpenses";
 import useDashboardMonth from "@/hooks/useDashboardMonth";
 import {endOfMonth, sameMonth, startOfMonth, dayKey} from "@/lib/utlis/date";
@@ -34,6 +34,7 @@ ChartJS.register(
 export default function ExpenseChart() {
   const {expenses, loading} = useExpenses()
   const {selectedMonth} = useDashboardMonth();
+  const chartRef = useRef<ChartJS<"line">>(null);
 
   const [data, setData] = useState<ChartData<"line">>({
     labels: [],
@@ -90,34 +91,69 @@ export default function ExpenseChart() {
           borderColor: "rgb(75, 192, 192)",
           backgroundColor: "rgba(75, 192, 192, 0.15)",
           fill: true,
-          tension: 0.35,
+          tension: 0.4,
           pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: "#fff",
+          pointHoverBorderWidth: 3,
           borderWidth: 2,
         },
+        {
+          label: "Budget",
+          data: labels.map(() => -1000),
+          borderColor: "rgba(255,99,132,0.8)",
+          borderDash: [6, 6],
+          pointRadius: 0,
+        }
       ],
     });
   }, [expenses, selectedMonth]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return (
+    <div className="w-full bg-gray-900 p-4 rounded-2xl shadow-md h-72 animate-pulse">
+      <div className="h-full w-full bg-gray-800 rounded-xl"></div>
+    </div>
+  );
 
   return (
     <div className="w-full bg-gray-900 p-4 rounded-2xl shadow-md ">
 
       <div className="w-full h-64">
         <Line
+          ref={chartRef}
           className={"m-auto w-full"}
           data={data}
           options={{
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
             plugins: {
               legend: {display: false},
               title: {display: false},
               tooltip: {
+                backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                titleColor: '#fff',
+                bodyColor: '#ccc',
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderWidth: 1,
+                padding: 10,
+                displayColors: false,
                 callbacks: {
                   label: (ctx) => {
-                    const v = ctx.parsed.y;
-                    return ` ${v.toLocaleString("pl-PL")} zł`;
+                    if (ctx.dataset.label === "Budget") return [];
+
+                    const current = ctx.parsed.y;
+                    const data = ctx.dataset.data as number[];
+                    const prev = ctx.dataIndex > 0 ? data[ctx.dataIndex - 1] : 0;
+                    const delta = current - prev;
+
+                    return [
+                      `Sum: ${current.toLocaleString("pl-PL")} zł`,
+                      `Today: ${delta.toLocaleString("pl-PL")} zł`,
+                    ];
                   },
                 },
               },
@@ -125,12 +161,18 @@ export default function ExpenseChart() {
             scales: {
               x: {
                 grid: {color: "rgba(255,255,255,0.08)"},
-                ticks: {maxTicksLimit: 8, color: "rgba(255,255,255,0.7)"},
+                ticks: {
+                  maxTicksLimit: 7,
+                  color: "rgba(255,255,255,0.7)",
+                  font: {size: 11}
+                },
               },
               y: {
+                beginAtZero: true,
                 grid: {color: "rgba(255,255,255,0.08)"},
                 ticks: {
                   color: "rgba(255,255,255,0.7)",
+                  font: {size: 11},
                   callback: (value) => `${Number(value).toLocaleString("pl-PL")} zł`,
                 },
               },
