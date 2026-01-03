@@ -4,7 +4,7 @@ import useExpenses from "@/hooks/useExpenses";
 import useDashboardMonth from "@/hooks/useDashboardMonth";
 import {useMemo} from "react";
 import {sameMonth} from "@/lib/utils/date";
-import LatestTransaction from "@/components/LatestTransactions";
+import LatestTransaction from "@/components/features/expenses/LatestTransactions";
 
 export default function DashboardLatestTransactions() {
   const {expenses, loading} = useExpenses();

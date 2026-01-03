@@ -1,5 +1,5 @@
-import Button from "@/components/Button";
-import TransactionBlock from "@/components/TransactionBlock";
+import Button from "@/components/ui/Button";
+import TransactionBlock from "@/components/features/expenses/TransactionBlock";
 import {ExpensesData} from "@/types/expenses";
 
 type LatestTransactionProps = {

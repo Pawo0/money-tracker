@@ -1,6 +1,6 @@
 import type {Session} from "next-auth";
 import {auth} from "@/auth";
-import AskToLoginPage from "@/components/AskToLoginPage";
+import AskToLoginPage from "@/components/features/auth/AskToLoginPage";
 import HistoryClient from "@/app/history/HistoryClient";
 
 export default async function Page() {

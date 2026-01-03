@@ -1,6 +1,5 @@
-import Button from "@/components/Button";
-import Link from "next/link";
-import GoogleButton from "@/components/GoogleButton";
+import Button from "@/components/ui/Button";
+import GoogleButton from "@/components/features/auth/GoogleButton";
 
 export default function Home() {
   return (

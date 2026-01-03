@@ -1,5 +1,5 @@
 import React from "react"
-import BottomNav from "@/components/BottomNav";
+import BottomNav from "@/components/layout/BottomNav";
 import {cn} from "@/lib/utils/ui";
 
 interface ContainerProps {

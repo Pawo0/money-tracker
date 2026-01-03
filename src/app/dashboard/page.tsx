@@ -1,11 +1,11 @@
-import ExpenseChart from "@/components/ExpenseChart";
+import ExpenseChart from "@/components/features/dashboard/ExpenseChart";
 import {auth} from "@/auth"
 import type {Session} from "next-auth";
-import AccountSummary from "@/components/AccountSummary";
-import AskToLoginPage from "@/components/AskToLoginPage";
+import AccountSummary from "@/components/features/dashboard/AccountSummary";
+import AskToLoginPage from "@/components/features/auth/AskToLoginPage";
 import {DashboardMonthProvider} from "@/context/DashboardMonthContext";
-import MonthPicker from "@/components/MonthPicker";
-import DashboardLatestTransactions from "@/components/DashboardLatestTransactions";
+import MonthPicker from "@/components/features/dashboard/MonthPicker";
+import DashboardLatestTransactions from "@/components/features/dashboard/DashboardLatestTransactions";
 
 export default async function DashboardPage() {
   const session: Session | null = await auth();

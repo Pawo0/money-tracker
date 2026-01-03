@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from "react"
 import {useRouter, useParams} from "next/navigation"
 import {ArrowLeft, Calendar, FileText, Tag, Trash2, Loader2, Clock, SquarePen} from "lucide-react"
-import CurrentCategoryIcon from "@/components/CurrentCategoryIcon"
+import CurrentCategoryIcon from "@/components/features/categories/CurrentCategoryIcon"
 import type {ExpensesData} from "@/types/expenses"
 import useExpenses from "@/hooks/useExpenses";
 

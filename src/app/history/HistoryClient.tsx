@@ -1,6 +1,6 @@
 "use client"
 
-import LatestTransaction from "@/components/LatestTransactions";
+import LatestTransaction from "@/components/features/expenses/LatestTransactions";
 import useExpenses from "@/hooks/useExpenses";
 
 export default function HistoryClient() {

@@ -1,5 +1,5 @@
-import Alert from "@/components/Alert";
-import GoogleButton from "@/components/GoogleButton";
+import Alert from "@/components/ui/Alert";
+import GoogleButton from "@/components/features/auth/GoogleButton";
 
 export default function AskToLoginPage() {
   return (

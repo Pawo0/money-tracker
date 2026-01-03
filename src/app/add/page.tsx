@@ -3,11 +3,11 @@
 import React, {useRef, useState} from "react";
 import type {ExpensesInputData as InputProps} from "@/types/expenses";
 import {useSession} from "next-auth/react";
-import AskToLoginPage from "@/components/AskToLoginPage";
+import AskToLoginPage from "@/components/features/auth/AskToLoginPage";
 import useExpenses from "@/hooks/useExpenses";
 import useModal from "@/hooks/useModal";
-import CategoryModal from "@/components/CategoryModal";
-import CurrentCategoryIcon from "@/components/CurrentCategoryIcon";
+import CategoryModal from "@/components/features/categories/CategoryModal";
+import CurrentCategoryIcon from "@/components/features/categories/CurrentCategoryIcon";
 import {Calendar, Loader2, X, PenLine} from "lucide-react";
 import {ToastContainer, toast, Bounce} from "react-toastify";
 import {cn} from "@/lib/utils/ui";
