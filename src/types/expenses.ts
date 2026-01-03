@@ -5,7 +5,7 @@ export interface ExpensesData {
   userId?: string;
   date: string;
   amount: number;
-  categoryId: string;
+  category: Categories;
   title: string;
   description?: string;
 }

@@ -77,7 +77,7 @@ export default function Page() {
     const payload = {
       ...inputs,
       title: inputs.title || inputs.category.name,
-      categoryId: inputs.category._id,
+      // categoryId: inputs.category._id,
       amount: amount,
     };
 

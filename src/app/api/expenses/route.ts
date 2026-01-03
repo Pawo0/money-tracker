@@ -24,9 +24,9 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     const {id: userId} = session?.user || {};
-    const {date, amount, categoryId, title, description}: ExpensesData = await req.json();
+    const {date, amount, category, title, description}: ExpensesData = await req.json();
 
-    if (!date || !amount || !categoryId || !title) {
+    if (!date || !amount || !category || !title) {
       return NextResponse.json({message: "Missing required fields"}, {status: 400});
     }
 
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       userId,
       date,
       amount,
-      categoryId,
+      category,
       title,
       description
     };
