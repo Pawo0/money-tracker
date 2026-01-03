@@ -109,7 +109,7 @@ export default function Page() {
   };
 
   return (
-    <div className="max-w-lg mx-auto w-full pb-20">
+    <div className="max-w-lg mx-auto w-full">
       <ToastContainer
         position="top-right"
         autoClose={5000}
