@@ -39,7 +39,9 @@ export async function POST(req: Request) {
       amount,
       category,
       title,
-      description
+      description,
+      created_at: new Date(),
+      updated_at: new Date()
     };
 
     const result = await expensesCollection.insertOne(newExpense);
@@ -47,32 +49,6 @@ export async function POST(req: Request) {
     return NextResponse.json({...newExpense, _id: result.insertedId}, {status: 201});
   } catch (error) {
     console.error("Error adding expense:", error);
-    return NextResponse.json({message: "Internal Server Error"}, {status: 500});
-  }
-}
-
-export async function DELETE(req: Request) {
-  try {
-    const session = await auth();
-    const {id: userId} = session?.user || {};
-    const {expenseId} = await req.json();
-
-    if (!expenseId) {
-      return NextResponse.json({message: "Missing expenseId"}, {status: 400});
-    }
-
-    const db = client.db("expense-tracker");
-    const expensesCollection = db.collection("expenses");
-
-    const result = await expensesCollection.deleteOne({userId, _id: ObjectId.createFromHexString(expenseId)});
-
-    if (result.deletedCount === 0) {
-      return NextResponse.json({message: "Expense not found or unauthorized"}, {status: 404});
-    }
-
-    return NextResponse.json({message: "Expense deleted successfully"}, {status: 200});
-  } catch (error) {
-    console.error("Error deleting expense:", error);
     return NextResponse.json({message: "Internal Server Error"}, {status: 500});
   }
 }
