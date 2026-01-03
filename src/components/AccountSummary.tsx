@@ -2,7 +2,7 @@
 
 import useExpenses from "@/hooks/useExpenses";
 import useDashboardMonth from "@/hooks/useDashboardMonth";
-import {monthKey} from "@/lib/utlis/date";
+import {monthKey} from "@/lib/utils/date";
 
 export default function AccountSummary(){
   const {expenses, loading} = useExpenses()

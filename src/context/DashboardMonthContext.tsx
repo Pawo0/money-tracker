@@ -2,8 +2,8 @@
 
 import React, {createContext, useEffect, useMemo, useState} from "react";
 import useExpenses from "@/hooks/useExpenses";
-import type {MonthKey} from "@/lib/utlis/date";
-import {monthKey, formatMonthLabel, sortMonths} from "@/lib/utlis/date";
+import type {MonthKey} from "@/lib/utils/date";
+import {monthKey, formatMonthLabel, sortMonths} from "@/lib/utils/date";
 
 export type DashboardMonthContextValue = {
   selectedMonth: MonthKey;

@@ -1,6 +1,6 @@
 import React from "react"
-import {cn} from "@/lib/utils"
 import BottomNav from "@/components/BottomNav";
+import {cn} from "@/lib/utils/ui";
 
 interface ContainerProps {
   children: React.ReactNode,

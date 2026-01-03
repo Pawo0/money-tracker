@@ -18,7 +18,7 @@ import {Line} from "react-chartjs-2";
 import {useEffect, useRef, useState} from "react";
 import useExpenses from "@/hooks/useExpenses";
 import useDashboardMonth from "@/hooks/useDashboardMonth";
-import {endOfMonth, sameMonth, startOfMonth, dayKey} from "@/lib/utlis/date";
+import {endOfMonth, sameMonth, startOfMonth, dayKey} from "@/lib/utils/date";
 
 ChartJS.register(
   CategoryScale,

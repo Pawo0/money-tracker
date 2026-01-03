@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { getIconByName } from "@/lib/utils";
 import useCategories from "@/hooks/useCategories";
 import { motion, AnimatePresence } from "framer-motion";
 import {Categories} from "@/types/categories";
+import {getIconByName} from "@/lib/utils/icons";
 
 interface CategoryModalProps {
   isOpen: boolean;

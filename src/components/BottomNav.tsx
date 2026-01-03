@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {Home, PlusCircle, List, LayoutDashboard} from "lucide-react";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/utils/ui";
 
 const navItems = [
   {href: "/", label: "Home", icon: Home},

@@ -1,4 +1,4 @@
-import {MonthKey} from "@/lib/utlis/date/types";
+import {MonthKey} from "@/lib/utils/date/types";
 
 export function sortMonths(months: MonthKey[]): MonthKey[] {
   const sortFn = (a: string, b: string) => {

@@ -1,5 +1,5 @@
 import type {LucideProps, LucideIcon} from "lucide-react"
-import { getIconByName } from "@/lib/utils";
+import {getIconByName} from "@/lib/utils/icons";
 
 interface CurrentCategoryIconProps extends LucideProps{
   categoryName: string | undefined;

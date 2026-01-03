@@ -1,6 +1,6 @@
 import type {ExpensesData} from "@/types/expenses";
 import Link from "next/link";
-import {dayKey} from "@/lib/utlis/date";
+import {dayKey} from "@/lib/utils/date";
 
 export default function TransactionBlock({transaction}: { transaction: ExpensesData }) {
   const formatted_date = dayKey(new Date(transaction.date))

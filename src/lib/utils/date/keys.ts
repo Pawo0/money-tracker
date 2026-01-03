@@ -1,4 +1,4 @@
-import type { MonthKey, DayKey} from "@/lib/utlis/date/types";
+import type { MonthKey, DayKey} from "@/lib/utils/date/types";
 
 export function pad2(n: number) {
   return String(n).padStart(2, "0");

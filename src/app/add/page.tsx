@@ -8,9 +8,9 @@ import useExpenses from "@/hooks/useExpenses";
 import useModal from "@/hooks/useModal";
 import CategoryModal from "@/components/CategoryModal";
 import CurrentCategoryIcon from "@/components/CurrentCategoryIcon";
-import {cn} from "@/lib/utils";
 import {Calendar, Loader2, X, PenLine} from "lucide-react";
 import {ToastContainer, toast, Bounce} from "react-toastify";
+import {cn} from "@/lib/utils/ui";
 
 export default function Page() {
   const {fetchExpenses} = useExpenses();

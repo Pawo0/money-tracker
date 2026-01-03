@@ -1,9 +1,9 @@
 "use client"
 
-import {cn} from "@/lib/utils"
 import React from "react";
 import Link from "next/link";
 import {useSession} from "next-auth/react";
+import {cn} from "@/lib/utils/ui";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode,
