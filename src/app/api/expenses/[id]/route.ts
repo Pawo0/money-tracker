@@ -3,14 +3,15 @@ import {NextResponse} from "next/server";
 import {auth} from "@/auth"
 
 
-export async function GET(req: Request, {params}: { params: { id: string } }) {
+export async function GET(_req: Request, {params}: { params: Promise<{ id: string }> }) {
+  const {id} = await params;
   try {
     const session = await auth();
     const {id: userId} = session?.user || {};
     const db = client.db("expense-tracker");
     const expensesCollection = db.collection("expenses");
 
-    const expense = await expensesCollection.findOne({_id: new ObjectId(params.id), userId});
+    const expense = await expensesCollection.findOne({_id: new ObjectId(id), userId});
 
     if (!expense) {
       return NextResponse.json({message: "Expense not found"}, {status: 404});
@@ -23,14 +24,15 @@ export async function GET(req: Request, {params}: { params: { id: string } }) {
   }
 }
 
-export async function DELETE(req: Request, {params}: { params: { id: string } }) {
+export async function DELETE(_req: Request, {params}: { params: Promise<{ id: string }> }) {
+  const {id} = await params;
   try{
     const session = await auth();
     const {id: userId} = session?.user || {};
     const db = client.db("expense-tracker");
     const expensesCollection = db.collection("expenses");
 
-    const result = await expensesCollection.deleteOne({_id: new ObjectId(params.id), userId});
+    const result = await expensesCollection.deleteOne({_id: new ObjectId(id), userId});
 
     if (result.deletedCount === 0) {
       return NextResponse.json({message: "Expense not found or not authorized"}, {status: 404});
@@ -42,7 +44,8 @@ export async function DELETE(req: Request, {params}: { params: { id: string } })
   }
 }
 
-export async function PATCH(req: Request, {params}: { params: { id: string } }) {
+export async function PATCH(req: Request, {params}: { params: Promise<{ id: string }> }) {
+  const {id} = await params;
   try {
     const session = await auth();
     const {id: userId} = session?.user || {};
@@ -51,7 +54,7 @@ export async function PATCH(req: Request, {params}: { params: { id: string } }) 
     const db = client.db("expense-tracker");
     const expensesCollection = db.collection("expenses");
 
-    const currentExpense = await expensesCollection.findOne({_id: new ObjectId(params.id), userId});
+    const currentExpense = await expensesCollection.findOne({_id: new ObjectId(id), userId});
     if (!currentExpense) {
       return NextResponse.json({message: "Expense not found or not authorized"}, {status: 404});
     }
@@ -66,7 +69,7 @@ export async function PATCH(req: Request, {params}: { params: { id: string } }) 
     };
 
     const updated = await expensesCollection.updateOne(
-      {_id: new ObjectId(params.id), userId},
+      {_id: new ObjectId(id), userId},
       {$set: updatedExpense}
     );
 

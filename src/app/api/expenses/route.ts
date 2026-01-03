@@ -1,9 +1,9 @@
-import client, {ObjectId} from "@/lib/mongodb";
+import client from "@/lib/mongodb";
 import {NextResponse} from "next/server";
 import {auth} from "@/auth"
 import {ExpensesData} from "@/types/expenses";
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
   try {
     const session = await auth();
     const {id: userId} = session?.user || {};
