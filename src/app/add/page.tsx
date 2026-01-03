@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import type {ExpensesInputData as InputProps} from "@/types/expenses";
 import {useSession} from "next-auth/react";
 import AskToLoginPage from "@/components/AskToLoginPage";
@@ -15,6 +15,7 @@ export default function Page() {
   const { fetchExpenses } = useExpenses();
   const { openModal: open, closeModal: close, isOpen } = useModal();
   const { data: session } = useSession();
+  const amountRef = useRef<HTMLInputElement>(null)
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputs, setInputs] = useState<InputProps>({
@@ -57,6 +58,9 @@ export default function Page() {
 
   const handleClearAmount = () => {
      setInputs({ ...inputs, amount: "" });
+     if (amountRef.current){
+       amountRef.current.focus()
+     }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -112,6 +116,7 @@ export default function Page() {
         <div className="flex flex-col gap-3">
             <div className="relative flex items-center bg-gray-800 rounded-3xl p-6 shadow-lg border border-gray-700 transition-colors focus-within:border-green-500 focus-within:ring-1 focus-within:ring-green-500/50">
             <input
+                ref={amountRef}
                 name="amount"
                 type="text"
                 placeholder="0.00"
