@@ -182,7 +182,7 @@ export default function Page() {
               <CurrentCategoryIcon categoryName={inputs.category.icon} size={32} className="text-white drop-shadow-md"/>
             ) : (
               <div
-                className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center border-2 border-dashed border-gray-500">
+                className="w-10 h-10 animate-pulse rounded-full bg-gray-700 flex items-center justify-center border-2 border-dashed border-gray-500">
                 <span className="text-xl text-gray-400">?</span>
               </div>
             )}
@@ -248,7 +248,6 @@ export default function Page() {
           onSelectAction={(category) => setInputs({
             ...inputs,
             category,
-            title: category.name
           })}
         />
       </form>
