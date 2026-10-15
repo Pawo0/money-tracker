@@ -22,6 +22,7 @@ export interface ExpensesInputData {
 
 export interface ExpensesContextInterface{
   expenses: ExpensesData[];
+  error: string | null;
   loading: boolean;
   fetchExpenses: () => Promise<void>;
 }

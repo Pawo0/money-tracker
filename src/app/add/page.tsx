@@ -1,256 +1,265 @@
-"use client"
-
-import React, {useRef, useState} from "react";
-import type {ExpensesInputData as InputProps} from "@/types/expenses";
-import {useSession} from "next-auth/react";
-import AskToLoginPage from "@/components/features/auth/AskToLoginPage";
+"use client";
+import { useState, useRef } from "react";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import {
+  Plus,
+  X,
+  ChevronDown,
+  Receipt,
+  Loader2,
+  Check,
+  Tag,
+} from "lucide-react";
 import useExpenses from "@/hooks/useExpenses";
-import useModal from "@/hooks/useModal";
+import AskToLoginPage from "@/components/features/auth/AskToLoginPage";
 import CategoryModal from "@/components/features/categories/CategoryModal";
 import CurrentCategoryIcon from "@/components/features/categories/CurrentCategoryIcon";
-import {Calendar, Loader2, X, PenLine} from "lucide-react";
-import {ToastContainer, toast, Bounce} from "react-toastify";
-import {cn} from "@/lib/utils/ui";
-
+import type { ExpensesInputData } from "@/types/expenses";
+const today = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+const fresh = (): ExpensesInputData => ({
+  date: today(),
+  amount: "",
+  title: "",
+  category: null,
+  description: "",
+});
 export default function Page() {
-  const {fetchExpenses} = useExpenses();
-  const {openModal: open, closeModal: close, isOpen} = useModal();
-  const {data: session} = useSession();
-  const amountRef = useRef<HTMLInputElement>(null)
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [inputs, setInputs] = useState<InputProps>({
-    date: new Date().toISOString().split("T")[0],
-    amount: "",
-    title: "",
-    category: null,
-    description: "",
-  });
-
-  if (!session) {
-    return <AskToLoginPage/>;
-  }
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    const {name, value} = e.target;
-
-    if (name === "amount") {
-      const normalizedValue = value.replace(",", ".");
-
-      // Number with up to two decimal places
-      const regex = /^\d*\.?\d{0,2}$/;
-
-      if (!regex.test(normalizedValue)) return;
-
-      setInputs({...inputs, amount: normalizedValue});
-      return;
-    }
-
-    setInputs({...inputs, [name]: value});
-  };
-
-  const handleQuickAmount = (val: number) => {
-    const current = parseFloat(inputs.amount || "0");
-    const newVal = (current + val).toFixed(2);
-    setInputs({...inputs, amount: newVal});
-  };
-
-  const handleClearAmount = () => {
-    setInputs({...inputs, amount: ""});
-    if (amountRef.current) {
-      amountRef.current.focus()
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const { status } = useSession();
+  const { fetchExpenses } = useExpenses();
+  const [inputs, setInputs] = useState(fresh);
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{
+    error: boolean;
+    text: string;
+  } | null>(null);
+  const amountRef = useRef<HTMLInputElement>(null);
+  if (status === "loading")
+    return <div className="skeleton h-80" aria-label="Loading your account" />;
+  if (status !== "authenticated") return <AskToLoginPage />;
+  const set = (key: keyof ExpensesInputData, value: string) =>
+    setInputs((v) => ({ ...v, [key]: value }));
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!inputs.amount || !inputs.category) {
-      toast.warning("Please fill in all required fields.");
+    setMessage(null);
+    if (!inputs.category || !inputs.amount || Number(inputs.amount) <= 0) {
+      setMessage({
+        error: true,
+        text: "Enter an amount greater than zero and choose a category.",
+      });
       return;
     }
-
-    setIsSubmitting(true);
-    const amount = parseFloat(inputs.amount) * -1;
-
-    const payload = {
-      ...inputs,
-      title: inputs.title || inputs.category.name,
-      // categoryId: inputs.category._id,
-      amount: amount,
-    };
-
+    setBusy(true);
     try {
       const res = await fetch("/api/expenses", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...inputs,
+          title: inputs.title.trim() || inputs.category.name,
+          amount: -Number(inputs.amount),
+        }),
       });
-
-      if (res.ok) {
-        setInputs({
-          date: new Date().toISOString().split("T")[0],
-          amount: "",
-          title: "",
-          category: null,
-          description: "",
-        });
-        await fetchExpenses();
-        toast.success('🦄 Success!');
-      } else {
-        toast.error("An error occurred while adding the transaction.");
-      }
-    } catch (error) {
-      console.error(error);
+      if (!res.ok)
+        throw new Error("Your expense could not be saved. Please try again.");
+      setInputs(fresh());
+      await fetchExpenses();
+      setMessage({
+        error: false,
+        text: "Expense added. Your overview is up to date.",
+      });
+      amountRef.current?.focus();
+    } catch (e) {
+      setMessage({
+        error: true,
+        text:
+          e instanceof Error
+            ? e.message
+            : "Something went wrong. Please try again.",
+      });
     } finally {
-      setIsSubmitting(false);
+      setBusy(false);
     }
-  };
-
+  }
   return (
-    <div className="max-w-lg mx-auto w-full">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition={Bounce}
-      />
-
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
-        <div className="flex flex-col gap-3">
-          <div
-            className="relative flex items-center bg-gray-800 rounded-3xl p-6 shadow-lg border border-gray-700 transition-colors focus-within:border-green-500 focus-within:ring-1 focus-within:ring-green-500/50">
+    <main>
+      <div className="page-heading">
+        <div>
+          <div className="eyebrow">BUILD A BETTER HABIT</div>
+          <h1>
+            Add expense<span className="heading-dot">.</span>
+          </h1>
+          <p>A few details now. A clearer picture later.</p>
+        </div>
+      </div>
+      <div className="form-layout">
+        <form className="panel expense-form" onSubmit={submit}>
+          {message && (
+            <div
+              role={message.error ? "alert" : "status"}
+              className={`feedback ${message.error ? "error" : ""}`}
+            >
+              {message.text}
+            </div>
+          )}
+          <label className="field-label" htmlFor="amount">
+            How much did you spend?
+          </label>
+          <div className="amount-field">
             <input
-              ref={amountRef}
+              id="amount"
               name="amount"
-              type="text"
-              placeholder="0.00"
-              value={inputs.amount}
-              onChange={handleChange}
+              ref={amountRef}
               inputMode="decimal"
-              className="w-full bg-transparent text-5xl font-bold text-white placeholder-gray-600 focus:outline-hidden text-right"
+              placeholder="0.00"
               autoComplete="off"
-              autoFocus
+              required
+              value={inputs.amount}
+              onChange={(e) => {
+                const v = e.target.value.replace(",", ".");
+                if (/^\d*\.?\d{0,2}$/.test(v)) set("amount", v);
+              }}
+              aria-describedby="amount-hint"
             />
+            <span>PLN</span>
             {inputs.amount && (
               <button
                 type="button"
-                onClick={handleClearAmount}
-                className="absolute right-4 top-4 text-gray-500 hover:text-white"
+                className="icon-button"
+                aria-label="Clear amount"
+                onClick={() => {
+                  set("amount", "");
+                  amountRef.current?.focus();
+                }}
               >
-                <X size={20}/>
+                <X size={16} />
               </button>
             )}
-            <span className="text-gray-400 text-4xl font-light mr-2 px-2">zł</span>
           </div>
-
-
-          <div className="flex gap-2 justify-end px-2 overflow-x-auto no-scrollbar">
-            {[1, 5, 10, 50, 100].map(val => (
+          <div className="quick-amounts" id="amount-hint">
+            {[10, 25, 50, 100].map((n) => (
               <button
-                key={val}
                 type="button"
-                onClick={() => handleQuickAmount(val)}
-                className="px-3 py-1 bg-gray-800 border border-gray-700 rounded-full text-sm text-gray-300 hover:bg-gray-700 hover:border-gray-500 transition-all active:scale-95"
+                key={n}
+                onClick={() =>
+                  set("amount", (Number(inputs.amount || 0) + n).toFixed(2))
+                }
               >
-                +{val}
+                + {n}
               </button>
             ))}
           </div>
-        </div>
-
-        <div className="flex bg-gray-800 rounded-2xl overflow-hidden border border-gray-700 shadow-sm">
-          <button
-            className={cn(
-              "flex items-center justify-center w-20 bg-gray-700/50 border-r border-gray-700 hover:bg-gray-700 transition-colors cursor-pointer active:bg-gray-600",
-              !inputs.category && "bg-gray-800"
-            )}
-            type="button"
-            onClick={open}
-            title="Select category"
-          >
-            {inputs.category ? (
-              <CurrentCategoryIcon categoryName={inputs.category.icon} size={32} className="text-white drop-shadow-md"/>
-            ) : (
-              <div
-                className="w-10 h-10 animate-pulse rounded-full bg-gray-700 flex items-center justify-center border-2 border-dashed border-gray-500">
-                <span className="text-xl text-gray-400">?</span>
-              </div>
-            )}
-          </button>
-
-
-          <div className="flex-1 relative group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
-              <PenLine size={18}/>
+          <div className="form-row">
+            <div className="form-field">
+              <label className="field-label" htmlFor="category">
+                Category
+              </label>
+              <button
+                id="category"
+                className="field-input category-select"
+                type="button"
+                aria-haspopup="dialog"
+                onClick={() => setOpen(true)}
+              >
+                {inputs.category ? (
+                  <CurrentCategoryIcon
+                    categoryName={inputs.category.icon}
+                    size={18}
+                  />
+                ) : (
+                  <Tag size={17} />
+                )}
+                <span>{inputs.category?.name || "Choose a category"}</span>
+                <ChevronDown size={15} />
+              </button>
             </div>
+            <div className="form-field">
+              <label className="field-label" htmlFor="date">
+                Date
+              </label>
+              <input
+                className="field-input"
+                id="date"
+                type="date"
+                required
+                value={inputs.date}
+                onChange={(e) => set("date", e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="form-field">
+            <label className="field-label" htmlFor="title">
+              Transaction name <span>· optional</span>
+            </label>
             <input
-              type="text"
-              name="title"
-              placeholder={inputs.category ? inputs.category.name : "Title"}
-              className="w-full p-4 pl-12 bg-transparent text-xl text-white placeholder-gray-500 focus:outline-hidden focus:bg-gray-700/30 transition-colors"
+              className="field-input"
+              id="title"
+              placeholder="e.g. Weekly groceries"
+              maxLength={150}
               value={inputs.title}
-              onChange={handleChange}
-              autoComplete="off"
+              onChange={(e) => set("title", e.target.value)}
             />
           </div>
-        </div>
-
-
-        <div
-          className="relative bg-gray-800 rounded-2xl border border-gray-700 hover:border-gray-600 transition-colors group">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-green-500 pointer-events-none">
-            <Calendar size={22}/>
+          <div className="form-field">
+            <label className="field-label" htmlFor="description">
+              Note <span>· optional</span>
+            </label>
+            <textarea
+              id="description"
+              className="field-input"
+              placeholder="Anything you’d like to remember?"
+              value={inputs.description}
+              onChange={(e) => set("description", e.target.value)}
+            />
           </div>
-          <input
-            type="date"
-            name="date"
-            className="w-full p-4 pl-12 bg-transparent text-xl text-white focus:outline-hidden appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full cursor-pointer"
-            value={inputs.date}
-            onChange={handleChange}
+          <div className="form-actions">
+            <Link className="button button-secondary" href="/dashboard">
+              Cancel
+            </Link>
+            <button
+              type="submit"
+              className="button button-primary"
+              disabled={busy}
+            >
+              {busy ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Plus size={16} />
+              )}{" "}
+              {busy ? "Saving expense…" : "Add expense"}
+            </button>
+          </div>
+          <CategoryModal
+            isOpen={open}
+            onCloseAction={() => setOpen(false)}
+            onSelectAction={(category) =>
+              setInputs((v) => ({ ...v, category }))
+            }
           />
-        </div>
-
-        <textarea
-          name="description"
-          placeholder="Description (optional)"
-          className="p-4 rounded-2xl bg-gray-800 border border-gray-700 text-lg text-white placeholder-gray-500 focus:outline-hidden focus:ring-1 focus:ring-green-500/50 resize-none h-32"
-          value={inputs.description}
-          onChange={handleChange}
-        />
-
-        <button
-          type="submit"
-          // disabled={isSubmitting || !inputs.amount || !inputs.category}
-          className="mt-2 p-5 rounded-2xl bg-green-600 text-white text-xl font-semibold shadow-lg hover:bg-green-500 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="animate-spin"/> Submitting...
-            </>
-          ) : (
-            "Add Transaction"
-          )}
-        </button>
-
-        <CategoryModal
-          isOpen={isOpen}
-          onCloseAction={close}
-          onSelectAction={(category) => setInputs({
-            ...inputs,
-            category,
-          })}
-        />
-      </form>
-    </div>
-  )
+        </form>
+        <aside className="form-aside">
+          <Receipt size={24} />
+          <h2>
+            It’s the small things
+            <br />
+            that add up.
+          </h2>
+          <p>
+            From your morning coffee to a monthly bill, every expense helps you
+            understand your spending.
+          </p>
+          <div className="aside-line" />
+          <Check size={16} />
+          <p>
+            Pick a category to keep your spending breakdown organized. You can
+            leave the name blank and we’ll use the category.
+          </p>
+        </aside>
+      </div>
+    </main>
+  );
 }

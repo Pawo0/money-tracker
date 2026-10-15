@@ -1,35 +1,48 @@
-"use client"
+"use client";
 
-import {createContext, useEffect, useState} from "react";
-import type {ExpensesData, ExpensesContextInterface} from "@/types/expenses"
+import { useSession } from "next-auth/react";
+import { createContext, useEffect, useState } from "react";
+import type { ExpensesData, ExpensesContextInterface } from "@/types/expenses";
 
-export const ExpensesContext = createContext<ExpensesContextInterface | null>(null)
+export const ExpensesContext = createContext<ExpensesContextInterface | null>(
+  null,
+);
 
-export function ExpensesProvider({children}: { children: React.ReactNode }) {
-  const [expenses, setExpenses] = useState<ExpensesData[]>([])
-  const [loading, setLoading] = useState(true)
+export function ExpensesProvider({ children }: { children: React.ReactNode }) {
+  const [expenses, setExpenses] = useState<ExpensesData[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  const { status } = useSession();
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    fetchExpenses();
-  }, [])
-
+    if (status === "authenticated") fetchExpenses();
+    else if (status === "unauthenticated") {
+      setExpenses([]);
+      setLoading(false);
+    }
+  }, [status]);
 
   const fetchExpenses = async function () {
-    setLoading(true)
+    setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/expenses");
+      if (!res.ok)
+        throw new Error("Unable to load transactions. Please try again.");
       const data: ExpensesData[] = await res.json();
-      setExpenses(data)
+      setExpenses(data);
     } catch (e) {
-      console.error(e)
+      setError(e instanceof Error ? e.message : "Unable to load transactions.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <ExpensesContext.Provider value={{expenses, loading, fetchExpenses}}>
+    <ExpensesContext.Provider
+      value={{ expenses, loading, error, fetchExpenses }}
+    >
       {children}
     </ExpensesContext.Provider>
-  )
+  );
 }

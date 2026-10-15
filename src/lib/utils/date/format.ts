@@ -2,7 +2,7 @@ import type {MonthKey} from "./types";
 
 export function formatMonthLabel(
   month: MonthKey,
-  locale: string = "en-EN"
+  locale: string = "en-GB"
 ): string {
   const [m, y] = month.split("-").map(Number);
   const d = new Date(y, (m ?? 1) - 1, 1);
