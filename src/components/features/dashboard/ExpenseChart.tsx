@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Chart as ChartJS,
@@ -10,15 +10,15 @@ import {
   Tooltip,
   Legend,
   Filler,
-} from "chart.js"
+} from "chart.js";
 
-import type {ChartData} from "chart.js";
+import type { ChartData } from "chart.js";
 
-import {Line} from "react-chartjs-2";
-import {useEffect, useRef, useState} from "react";
+import { Line } from "react-chartjs-2";
+import { useEffect, useRef, useState } from "react";
 import useExpenses from "@/hooks/useExpenses";
 import useDashboardMonth from "@/hooks/useDashboardMonth";
-import {endOfMonth, sameMonth, startOfMonth, dayKey} from "@/lib/utils/date";
+import { endOfMonth, sameMonth, startOfMonth, dayKey } from "@/lib/utils/date";
 
 ChartJS.register(
   CategoryScale,
@@ -32,8 +32,8 @@ ChartJS.register(
 );
 
 export default function ExpenseChart() {
-  const {expenses, loading} = useExpenses()
-  const {selectedMonth} = useDashboardMonth();
+  const { expenses, loading } = useExpenses();
+  const { selectedMonth } = useDashboardMonth();
   const chartRef = useRef<ChartJS<"line">>(null);
 
   const [data, setData] = useState<ChartData<"line">>({
@@ -48,7 +48,15 @@ export default function ExpenseChart() {
 
     // dla bieżącego miesiąca: do dziś (nie do końca miesiąca)
     const rangeEnd = sameMonth(now, selectedMonth)
-      ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+      ? new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          23,
+          59,
+          59,
+          999,
+        )
       : monthEnd;
 
     const dailyTotals = expenses.reduce<Record<string, number>>((acc, exp) => {
@@ -68,16 +76,20 @@ export default function ExpenseChart() {
     for (
       let cursor = new Date(monthStart.getFullYear(), monthStart.getMonth(), 1);
       cursor <= rangeEnd;
-      cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + 1)
+      cursor = new Date(
+        cursor.getFullYear(),
+        cursor.getMonth(),
+        cursor.getDate() + 1,
+      )
     ) {
       const key = dayKey(cursor);
       sum += dailyTotals[key] ?? 0;
 
       labels.push(
-        cursor.toLocaleDateString("en-EN", {
+        cursor.toLocaleDateString("en-GB", {
           day: "2-digit",
           month: "short",
-        })
+        }),
       );
       cumulative.push(sum);
     }
@@ -86,10 +98,10 @@ export default function ExpenseChart() {
       labels,
       datasets: [
         {
-          label: "Expenses for the month",
+          label: "Monthly expenses",
           data: cumulative,
-          borderColor: "rgb(75, 192, 192)",
-          backgroundColor: "rgba(75, 192, 192, 0.15)",
+          borderColor: "#397354",
+          backgroundColor: "rgba(57, 115, 84, 0.07)",
           fill: true,
           tension: 0.4,
           pointRadius: 0,
@@ -101,43 +113,55 @@ export default function ExpenseChart() {
         {
           label: "Budget",
           data: labels.map(() => -1000),
-          borderColor: "rgba(255,99,132,0.8)",
+          borderColor: "#b69565",
           borderDash: [6, 6],
           pointRadius: 0,
-        }
+        },
       ],
     });
   }, [expenses, selectedMonth]);
 
-  if (loading) return (
-    <div className="w-full bg-gray-900 p-4 rounded-2xl shadow-md h-72 animate-pulse">
-      <div className="h-full w-full bg-gray-800 rounded-xl"></div>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="chart-panel skeleton" role="status">
+        Loading chart…
+      </div>
+    );
 
   return (
-    <div className="w-full bg-gray-900 p-4 rounded-2xl shadow-md ">
-
-      <div className="w-full h-64">
+    <section className="chart-panel">
+      <div className="chart-heading">
+        <div>
+          <h2>Your spending rhythm</h2>
+          <p>Cumulative spending throughout the month</p>
+        </div>
+        <div className="chart-legend">
+          <span>Spending</span>
+          <span>Budget: 1 000 zł</span>
+        </div>
+      </div>
+      <div className="chart-canvas">
         <Line
           ref={chartRef}
+          role="img"
+          aria-label="Cumulative monthly expenses compared with the 1,000 zł budget reference"
           className={"m-auto w-full"}
           data={data}
           options={{
             responsive: true,
             maintainAspectRatio: false,
             interaction: {
-              mode: 'index',
+              mode: "index",
               intersect: false,
             },
             plugins: {
-              legend: {display: false},
-              title: {display: false},
+              legend: { display: false },
+              title: { display: false },
               tooltip: {
-                backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                titleColor: '#fff',
-                bodyColor: '#ccc',
-                borderColor: 'rgba(255,255,255,0.1)',
+                backgroundColor: "#203b2f",
+                titleColor: "#fff",
+                bodyColor: "#ccc",
+                borderColor: "rgba(255,255,255,0.1)",
                 borderWidth: 1,
                 padding: 10,
                 displayColors: false,
@@ -147,12 +171,13 @@ export default function ExpenseChart() {
 
                     const current = ctx.parsed.y;
                     const data = ctx.dataset.data as number[];
-                    const prev = ctx.dataIndex > 0 ? data[ctx.dataIndex - 1] : 0;
+                    const prev =
+                      ctx.dataIndex > 0 ? data[ctx.dataIndex - 1] : 0;
                     const delta = current - prev;
 
                     return [
-                      `Sum: ${current.toLocaleString("pl-PL")} zł`,
-                      `Today: ${delta.toLocaleString("pl-PL")} zł`,
+                      `Total: ${current.toLocaleString("en-GB")} zł`,
+                      `On this day: ${delta.toLocaleString("en-GB")} zł`,
                     ];
                   },
                 },
@@ -160,26 +185,27 @@ export default function ExpenseChart() {
             },
             scales: {
               x: {
-                grid: {color: "rgba(255,255,255,0.08)"},
+                grid: { color: "rgba(40,60,46,0.07)" },
                 ticks: {
                   maxTicksLimit: 7,
-                  color: "rgba(255,255,255,0.7)",
-                  font: {size: 11}
+                  color: "#81877e",
+                  font: { size: 11 },
                 },
               },
               y: {
                 beginAtZero: true,
-                grid: {color: "rgba(255,255,255,0.08)"},
+                grid: { color: "rgba(40,60,46,0.07)" },
                 ticks: {
-                  color: "rgba(255,255,255,0.7)",
-                  font: {size: 11},
-                  callback: (value) => `${Number(value).toLocaleString("pl-PL")} zł`,
+                  color: "#81877e",
+                  font: { size: 11 },
+                  callback: (value) =>
+                    `${Number(value).toLocaleString("en-GB")} zł`,
                 },
               },
             },
           }}
         />
       </div>
-    </div>
+    </section>
   );
 }

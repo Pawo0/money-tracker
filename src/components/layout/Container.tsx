@@ -1,37 +1,28 @@
-import React from "react"
+import React from "react";
 import BottomNav from "@/components/layout/BottomNav";
-import {cn} from "@/lib/utils/ui";
-
+import { cn } from "@/lib/utils/ui";
 interface ContainerProps {
-  children: React.ReactNode,
-  className?: string,
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full' | 'auto'
+  children: React.ReactNode;
+  className?: string;
+  size?: "sm" | "md" | "lg" | "xl" | "full" | "auto";
 }
-
-function Container({
-  children,
-  className,
-  size = 'auto'
-}: ContainerProps) {
+export default function Container({ children, className }: ContainerProps) {
   return (
-    <section
-      className={cn(
-        "bg-black/70 rounded-2xl min-h-screen flex flex-col mx-auto px-4 sm:px-6 lg:px-8 ",
-        {
-          'max-w-sm': size === 'sm',
-          'max-w-md': size === 'md',
-          'max-w-xl': size === 'xl',
-          'max-w-none': size === 'full',
-          'sm:max-w-xl xl:max-w-2xl': size === 'auto',
-        },
-        className
-      )}
-    >
-      <div className="py-4 gap-4 flex flex-col flex-1">{children}</div>
-      <BottomNav/>
-    </section>
-  )
+    <div className={cn("app-shell", className)}>
+      <BottomNav />
+      <div className="workspace">
+        <header className="workspace-topbar">
+          <span>Personal finance</span>
+          <span className="topbar-note">
+            <span />A little clarity. Every day.
+          </span>
+        </header>
+        <div className="page-content">{children}</div>
+        <footer className="workspace-footer">
+          <span>moneytracker.</span>
+          <span>Make room for financial clarity.</span>
+        </footer>
+      </div>
+    </div>
+  );
 }
-
-
-export default Container

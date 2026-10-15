@@ -1,19 +1,56 @@
-import type {ExpensesData} from "@/types/expenses";
+import type { ExpensesData } from "@/types/expenses";
 import Link from "next/link";
-import {dayKey} from "@/lib/utils/date";
-
-export default function TransactionBlock({transaction}: { transaction: ExpensesData }) {
-  const formatted_date = dayKey(new Date(transaction.date))
+import { ArrowUpRight } from "lucide-react";
+import CurrentCategoryIcon from "@/components/features/categories/CurrentCategoryIcon";
+export default function TransactionBlock({
+  transaction,
+}: {
+  transaction: ExpensesData;
+}) {
   return (
-    <Link
-      className="p-4 bg-gray-800 rounded-2xl text-left w-full cursor-pointer hover:bg-gray-700 transition-colors"
-      href={`/history/${transaction._id}`}
-    >
-      <p className="text-gray-400 text-sm mb-2">{formatted_date}</p>
-      <div className="flex justify-between items-center">
-        <p>{transaction.title}</p>
-        <p className={transaction.amount < 0 ? "text-red-500" : "text-green-500"}>{transaction.amount} zł</p>
+    <Link className="transaction-row" href={`/history/${transaction._id}`}>
+      <div className="transaction-name">
+        <span
+          className="category-icon"
+          style={{ color: transaction.category?.color || "#486553" }}
+        >
+          <CurrentCategoryIcon
+            categoryName={transaction.category?.icon}
+            size={20}
+          />
+        </span>
+        <div>
+          <strong>{transaction.title}</strong>
+          <span className="mobile-transaction-meta">
+            {transaction.category?.name} ·{" "}
+            {new Date(transaction.date).toLocaleDateString("en-GB")}
+          </span>
+        </div>
       </div>
+      <span className="transaction-category">
+        {transaction.category?.name || "Uncategorised"}
+      </span>
+      <span className="transaction-date">
+        {new Date(transaction.date).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })}
+      </span>
+      <strong
+        className={
+          transaction.amount < 0
+            ? "transaction-amount"
+            : "transaction-amount positive"
+        }
+      >
+        {transaction.amount.toLocaleString("en-GB", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+        <span> zł</span>
+      </strong>
+      <ArrowUpRight className="transaction-arrow" size={16} />
     </Link>
   );
 }

@@ -1,15 +1,19 @@
-"use client"
+"use client";
 
 import useExpenses from "@/hooks/useExpenses";
 import useDashboardMonth from "@/hooks/useDashboardMonth";
-import {monthKey} from "@/lib/utils/date";
+import { monthKey } from "@/lib/utils/date";
 
-export default function AccountSummary(){
-  const {expenses, loading} = useExpenses()
-  const {selectedMonth, formatMonthLabel} = useDashboardMonth();
+export default function AccountSummary() {
+  const { expenses, loading } = useExpenses();
+  const { selectedMonth, formatMonthLabel } = useDashboardMonth();
 
-  if (loading){
-    return <p>Loading...</p>
+  if (loading) {
+    return (
+      <div className="summary-card skeleton" role="status">
+        Loading summary…
+      </div>
+    );
   }
 
   const expensesForMonth = expenses.filter((exp) => {
@@ -18,16 +22,29 @@ export default function AccountSummary(){
     return monthKey(d) === selectedMonth;
   });
 
-  const totalAmount = expensesForMonth.reduce((acc, exp) =>{
-    return acc + exp.amount
-  }, 0)
-  const transactionCount = expensesForMonth.length
+  const totalAmount = expensesForMonth.reduce((acc, exp) => {
+    return acc + exp.amount;
+  }, 0);
+  const transactionCount = expensesForMonth.length;
 
   return (
-    <div className="p-4 bg-gray-800 rounded-2xl">
-      <p className="text-sm text-gray-400">Wallet • {formatMonthLabel(selectedMonth)}</p>
-      <p className="text-2xl font-bold">{totalAmount.toFixed(2)} zł</p>
-      <p className="text-xs text-gray-400">{transactionCount} transactions</p>
-    </div>
-  )
+    <section className="summary-card">
+      <div className="summary-top">
+        <span className="small-label">MONTHLY EXPENSES</span>
+        <span className="summary-symbol">↗</span>
+      </div>
+      <p className="summary-month">{formatMonthLabel(selectedMonth)}</p>
+      <p className="summary-amount">
+        {totalAmount.toLocaleString("en-GB", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+        <span>zł</span>
+      </p>
+      <div className="summary-bottom">
+        <span>Total transactions</span>
+        <strong>{transactionCount.toLocaleString("en-GB")}</strong>
+      </div>
+    </section>
+  );
 }

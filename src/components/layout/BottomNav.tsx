@@ -1,43 +1,97 @@
 "use client";
 
 import Link from "next/link";
-import {usePathname} from "next/navigation";
-import {Home, PlusCircle, List, LayoutDashboard} from "lucide-react";
-import {cn} from "@/lib/utils/ui";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import {
+  ArrowUpRight,
+  Home,
+  Plus,
+  List,
+  LayoutDashboard,
+  Wallet,
+  LogOut,
+} from "lucide-react";
+import { signOut } from "next-auth/react";
+import { cn } from "@/lib/utils/ui";
 
 const navItems = [
-  {href: "/", label: "Home", icon: Home},
-  {href: "/dashboard", label: "Dashboard", icon: LayoutDashboard},
-  {href: "/history", label: "History", icon: List},
-  {href: "/add", label: "Add", icon: PlusCircle},
+  { href: "/", label: "Home", icon: Home },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { href: "/history", label: "Transactions", icon: List },
+  { href: "/add", label: "Add expense", icon: Plus },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
-
+  const { data: session } = useSession();
   return (
-    <div className={"sticky bottom-0 left-0 right-0 bg-gray-800 h-full mt-5 -mx-4 sm:-mx-6 lg:-mx-8"}>
-      <nav className="border-t bg-gray-700 rounded-b-2xl">
-        <ul className="flex justify-around items-center h-16">
-          {navItems.map(({href, label, icon: Icon}) => {
-            const isActive = pathname === href;
+    <aside className="sidebar">
+      <Link href="/" className="brand" aria-label="Money Tracker — home">
+        <span className="brand-icon">
+          <Wallet size={21} />
+        </span>
+        <span>
+          money<span className="brand-light">tracker</span>
+          <span className="brand-dot">.</span>
+        </span>
+      </Link>
+      <div className="nav-caption">YOUR WORKSPACE</div>
+      <nav aria-label="Main navigation">
+        <ul className="nav-list">
+          {navItems.map(({ href, label, icon: Icon }) => {
+            const isActive =
+              href === "/history"
+                ? pathname.startsWith(href)
+                : pathname === href;
             return (
-              <li key={href} className="flex-1">
+              <li key={href}>
                 <Link
                   href={href}
-                  className={cn(
-                    "flex flex-col items-center text-sm text-gray-200 cursor-pointer px-3 py-1.5 ",
-                    isActive && "font-semibold bg-gray-500 rounded-lg"
-                  )}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn("nav-link", isActive && "is-active")}
                 >
-                  <Icon className="h-5 w-5 mb-1"/>
-                  <span className="hidden sm:block">{label}</span>
+                  <Icon size={19} />
+                  <span>{label}</span>
+                  {isActive && <span className="nav-dot" />}
                 </Link>
               </li>
             );
           })}
         </ul>
       </nav>
-    </div>
+      <div className="sidebar-bottom">
+        <div className="sidebar-note">
+          <span className="small-label">SMALL HABITS, REAL CHANGE</span>
+          <p>
+            Little expenses.
+            <br />
+            The bigger picture.
+          </p>
+          <ArrowUpRight size={20} />
+        </div>
+        <div className="profile">
+          <span className="avatar">
+            {session?.user?.name?.charAt(0) || "M"}
+          </span>
+          <div>
+            <strong>{session?.user?.name || "Your wallet"}</strong>
+            <span>
+              {session ? "Personal account" : "Make yourself at home"}
+            </span>
+          </div>
+          {session && (
+            <button
+              type="button"
+              onClick={() => signOut()}
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <LogOut size={17} />
+            </button>
+          )}
+        </div>
+      </div>
+    </aside>
   );
 }
