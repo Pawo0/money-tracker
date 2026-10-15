@@ -39,11 +39,30 @@ Run the demo fixture and storage-validation checks with `npm run test:demo`.
 | Animations     | **Framer Motion**                            |
 | Data fetching  | **SWR**                                      |
 
-## Preview Screenshots
+## Screenshots
 
-<img width="460" height="1024" alt="Adding new expense" src="https://github.com/user-attachments/assets/4342101a-3cc0-41e6-94ca-611aec1b32a4" />
+The redesigned interface uses a dark theme with muted mint accents. These screenshots show the local demo account with sample data.
 
-<img width="460" height="1024" alt="Choosing a category" src="https://github.com/user-attachments/assets/86cce60c-79a4-4e7f-bd7a-8d3aa5238c89" />
+### Overview
 
-<img width="460" height="1024" alt="Dasboard" src="https://github.com/user-attachments/assets/a7b8d466-73c8-4ced-8c6a-23d55f2bad09" />
+Monthly spending, activity chart, category breakdown, and recent transactions.
 
+![Overview dashboard with monthly spending and category breakdown](docs/screenshots/dashboard.jpg)
+
+### Transactions
+
+Searchable expense history with category filters.
+
+![Transaction history with search and category filtering](docs/screenshots/transactions.jpg)
+
+### Add an expense
+
+Expense entry with amount shortcuts, category, date, and an optional note.
+
+![New expense form in the dark theme](docs/screenshots/add-expense.jpg)
+
+### Category selection
+
+Category list with icons and a visible selection state.
+
+![Category picker showing Groceries selected](docs/screenshots/category-picker.jpg)
