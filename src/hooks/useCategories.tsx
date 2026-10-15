@@ -1,10 +1,25 @@
-"use client"
-import useSWR from "swr"
-
-const fetcher = (url: string) => fetch(url).then(res => res.json());
-
+"use client";
+import useExpenses from "@/hooks/useExpenses";
+import { demoCategories } from "@/lib/demo";
+import { useSession } from "next-auth/react";
+import useSWR from "swr";
+import type { Categories } from "@/types/categories";
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Unable to load categories. Please try again.");
+  return res.json();
+};
 export default function useCategories() {
-  const {data, isLoading} = useSWR('/api/categories', fetcher);
-
-  return {categories: data, isLoading};
+  const { isDemo, ready } = useExpenses();
+  const { status } = useSession();
+  const { data, isLoading, error, mutate } = useSWR<Categories[]>(
+    ready && !isDemo && status === "authenticated" ? "/api/categories" : null,
+    fetcher,
+  );
+  return {
+    categories: isDemo ? demoCategories : Array.isArray(data) ? data : [],
+    isLoading: !ready || (!isDemo && isLoading),
+    error: isDemo ? undefined : error,
+    retry: () => mutate(),
+  };
 }

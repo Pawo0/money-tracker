@@ -1,212 +1,192 @@
-"use client"
-
-import React, {useEffect, useState} from "react"
-import {useRouter, useParams} from "next/navigation"
-import {ArrowLeft, Calendar, FileText, Tag, Trash2, Loader2, Clock, SquarePen} from "lucide-react"
-import CurrentCategoryIcon from "@/components/features/categories/CurrentCategoryIcon"
-import type {ExpensesData} from "@/types/expenses"
+"use client";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  ArrowLeft,
+  CalendarDays,
+  Tag,
+  FileText,
+  Trash2,
+  Loader2,
+} from "lucide-react";
+import CurrentCategoryIcon from "@/components/features/categories/CurrentCategoryIcon";
+import { money } from "@/lib/utils/money";
+import type { ExpensesData } from "@/types/expenses";
+import AccountGate from "@/components/features/auth/AccountGate";
 import useExpenses from "@/hooks/useExpenses";
-
-
 export default function TransactionDetailsPage() {
-  const router = useRouter()
-  const params = useParams()
-  const {id} = params
-
-  const [expense, setExpense] = useState<ExpensesData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  const {fetchExpenses} = useExpenses()
-
-
-  useEffect(() => {
-    const fetchTransaction = async () => {
-      try {
-        const res = await fetch(`/api/expenses/${id}`)
-        if (!res.ok) throw new Error("Failed to fetch")
-        const data = await res.json()
-        setExpense(data)
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    if (id) fetchTransaction()
-  }, [id])
-
-  const handleDelete = async () => {
-    const confirmed = window.confirm("Are you sure you want to delete this transaction?")
-    if (!confirmed) return
-
-    setIsDeleting(true)
-    try {
-      const res = await fetch(`/api/expenses/${id}`, {
-        method: "DELETE",
-      })
-
-      if (res.ok) {
-        await fetchExpenses()
-        router.back()
-        router.refresh()
-      } else {
-        alert("There was an error deleting the transaction.")
-      }
-    } catch (error) {
-      console.error(error)
-      alert("Server error occurred while deleting the transaction.")
-    } finally {
-      setIsDeleting(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex flex-col h-full animate-pulse gap-6">
-        <div className="h-8 w-8 bg-gray-700 rounded-full mb-4"></div>
-        <div className="flex flex-col items-center gap-4 py-8">
-          <div className="h-24 w-24 bg-gray-700 rounded-full"></div>
-          <div className="h-10 w-48 bg-gray-700 rounded-xl"></div>
-          <div className="h-6 w-32 bg-gray-800 rounded-xl"></div>
-        </div>
-        <div className="space-y-4">
-          <div className="h-16 w-full bg-gray-800 rounded-2xl"></div>
-          <div className="h-16 w-full bg-gray-800 rounded-2xl"></div>
-        </div>
-      </div>
-    )
-  }
-
-  if (!expense) return <p className="text-center text-gray-400 mt-10">Transaction not found</p>
-
   return (
-    <div className={`flex flex-col h-full relative`}>
-      <div className="flex items-center  mb-4">
-        <div className="flex-1">
-          <button
-            onClick={() => router.back()}
-            className="p-2 -ml-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-gray-800"
-          >
-            <ArrowLeft size={28}/>
-          </button>
-        </div>
-        <span className="flex-1 text-gray-500 text-sm font-medium uppercase tracking-wider text-center">Details</span>
-        <div className="flex-1"></div>
-      </div>
-
-      <div className="flex flex-col items-center justify-center py-6 mb-6 relative">
-        <div
-          className="absolute inset-0 rounded-full blur-xl opacity-20"
-          style={{backgroundColor: expense.category?.color || '#555'}}
-        ></div>
-        <div className="mb-4 p-1 rounded-full border-4 border-gray-800 shadow-xl ">
-          <CurrentCategoryIcon categoryName={expense.category?.icon} size={80}/>
-        </div>
-
-        <h1 className="text-5xl font-bold text-white mb-2">
-          {expense.amount.toLocaleString("pl-PL", {minimumFractionDigits: 2})}
-          <span className="text-2xl text-gray-500 font-normal ml-2">zł</span>
-        </h1>
-        <p className="text-xl text-gray-400 font-medium">{expense.title}</p>
-      </div>
-
-      <div className="flex flex-col gap-3 flex-1 overfl ow-y-auto custom-scrollbar">
-
-        <div className="flex items-center gap-4 p-4 bg-gray-800/50 rounded-2xl border border-gray-700/50">
-          <div className="p-3 bg-gray-800 rounded-xl text-gray-400">
-            <Calendar size={24}/>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-gray-500 text-xs uppercase">Transaction date</span>
-            <span className="text-gray-200 text-lg">
-                    {new Date(expense.date).toLocaleDateString("en-EN", {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 p-4 bg-gray-800/50 rounded-2xl border border-gray-700/50">
-          <div className="p-3 bg-gray-800 rounded-xl text-gray-400">
-            <Tag size={24}/>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-gray-500 text-xs uppercase">Kategoria</span>
-            <span className="text-gray-200 text-lg flex items-center gap-2">
-                    <span
-                      className="w-3 h-3 rounded-full"
-                      style={{backgroundColor: expense.category?.color}}
-                    ></span>
-              {expense.category?.name}
-                </span>
-          </div>
-        </div>
-
-        {expense.description && (
-          <div className="flex flex-col gap-2 p-5 bg-gray-800/50 rounded-2xl border border-gray-700/50">
-            <div className="flex items-center gap-2 text-gray-500 mb-1">
-              <FileText size={16}/>
-              <span className="text-xs uppercase">Description</span>
-            </div>
-            <p className="text-gray-300 text-base leading-relaxed italic">
-              {'"' + expense.description + '"'}
-            </p>
-          </div>
-        )}
-
-        {expense.created_at && (
-          <div className="flex items-center justify-center gap-2 mt-2 opacity-30">
-            <Clock size={12} className="text-gray-400"/>
-            <p className="text-xs text-center text-gray-400">
-              Created: {new Date(expense.created_at).toLocaleString("en-EN", {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })
-            }
-            </p>
-          </div>
-        )}
-        {expense.updated_at && expense.updated_at !== expense.created_at && (
-          <div className="flex items-center justify-center gap-2 mt-2 opacity-30">
-            <SquarePen size={12} className="text-gray-400"/>
-            <p className="text-xs text-center text-gray-400">
-              Created: {new Date(expense.updated_at).toLocaleString("en-EN", {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })
-            }
-            </p>
-          </div>
-        )
-        }
-      </div>
-
-      <div className="mt-6 pt-4 border-t border-gray-800">
-        <button
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className="w-full py-4 rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 text-lg font-semibold hover:bg-red-500 hover:text-white transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-        >
-          {isDeleting ? (
-            <Loader2 className="animate-spin"/>
-          ) : (
-            <>
-              <Trash2 size={20}/> Delete Transaction
-            </>
+    <AccountGate>
+      <TransactionDetails />
+    </AccountGate>
+  );
+}
+function TransactionDetails() {
+  const { id } = useParams();
+  const router = useRouter();
+  const { getExpense, deleteExpense, isDemo } = useExpenses();
+  const [expense, setExpense] = useState<ExpensesData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    async function load() {
+      setLoading(true);
+      setExpense(null);
+      setError("");
+      try {
+        const item = await getExpense(String(id), controller.signal);
+        if (!controller.signal.aborted) setExpense(item);
+      } catch (e) {
+        if (!controller.signal.aborted)
+          setError(
+            e instanceof Error ? e.message : "Unable to load transaction.",
+          );
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }
+    if (id) load();
+    return () => controller.abort();
+  }, [id, retry, getExpense]);
+  async function remove() {
+    setBusy(true);
+    setError("");
+    try {
+      await deleteExpense(String(id));
+      router.push("/history");
+      router.refresh();
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : "Unable to delete transaction.",
+      );
+      setBusy(false);
+    }
+  }
+  return (
+    <main className="details-wrap">
+      <Link href="/history" className="back-link">
+        <ArrowLeft size={16} /> All transactions
+      </Link>
+      {error && (
+        <div className="error-banner" role="alert">
+          {error}
+          {!expense && (
+            <button onClick={() => setRetry((v) => v + 1)}>Try again</button>
           )}
-        </button>
-      </div>
-    </div>
-  )
+        </div>
+      )}
+      {loading ? (
+        <div className="panel skeleton h-96" aria-label="Loading transaction" />
+      ) : (
+        expense && (
+          <>
+            <section className="panel">
+              <div className="details-hero">
+                <span className="eyebrow">TRANSACTION DETAILS</span>
+                <div
+                  className="details-icon"
+                  style={{ color: expense.category?.color }}
+                >
+                  <CurrentCategoryIcon
+                    categoryName={expense.category?.icon}
+                    size={30}
+                  />
+                </div>
+                <h1>
+                  {expense.amount < 0 ? "−" : "+"}
+                  {money(Math.abs(expense.amount))}
+                </h1>
+                <p>{expense.title}</p>
+              </div>
+              <div className="detail-list">
+                <div>
+                  <CalendarDays size={20} />
+                  <span>
+                    <small>Date</small>
+                    <p>
+                      {new Date(expense.date).toLocaleDateString("en-GB", {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </span>
+                </div>
+                <div>
+                  <Tag size={20} />
+                  <span>
+                    <small>Category</small>
+                    <p>{expense.category?.name || "Uncategorized"}</p>
+                  </span>
+                </div>
+                {expense.description && (
+                  <div>
+                    <FileText size={20} />
+                    <span>
+                      <small>Note</small>
+                      <p>{expense.description}</p>
+                    </span>
+                  </div>
+                )}
+              </div>
+            </section>
+            {expense.created_at && (
+              <p className="details-meta">
+                Added {new Date(expense.created_at).toLocaleString("en-GB")}
+              </p>
+            )}
+            {confirmDelete ? (
+              <div
+                className="delete-confirm"
+                role="group"
+                aria-label="Confirm deletion"
+              >
+                <h2>Delete this transaction?</h2>
+                <p>
+                  {isDemo
+                    ? "This removes the expense from your demo. Reset demo restores the original sample data."
+                    : "This permanently removes the expense from your account."}
+                </p>
+                <div className="form-actions">
+                  <button
+                    className="button button-secondary"
+                    disabled={busy}
+                    onClick={() => setConfirmDelete(false)}
+                  >
+                    Keep transaction
+                  </button>
+                  <button
+                    className="button delete-confirm-action"
+                    disabled={busy}
+                    onClick={remove}
+                  >
+                    {busy ? "Deleting…" : "Confirm delete"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                className="danger-button"
+                disabled={busy}
+                onClick={() => setConfirmDelete(true)}
+              >
+                {busy ? (
+                  <Loader2 className="animate-spin" size={16} />
+                ) : (
+                  <Trash2 size={16} />
+                )}{" "}
+                {busy ? "Deleting…" : "Delete transaction"}
+              </button>
+            )}
+          </>
+        )
+      )}
+    </main>
+  );
 }

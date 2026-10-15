@@ -1,37 +1,37 @@
-import React from "react"
+import DemoBanner from "@/components/features/auth/DemoBanner";
+import React from "react";
 import BottomNav from "@/components/layout/BottomNav";
-import {cn} from "@/lib/utils/ui";
+import { cn } from "@/lib/utils/ui";
 
-interface ContainerProps {
-  children: React.ReactNode,
-  className?: string,
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full' | 'auto'
-}
-
-function Container({
+export default function Container({
   children,
   className,
-  size = 'auto'
-}: ContainerProps) {
+}: {
+  children: React.ReactNode;
+  className?: string;
+  size?: "sm" | "md" | "lg" | "xl" | "full" | "auto";
+}) {
   return (
-    <section
-      className={cn(
-        "bg-black/70 rounded-2xl min-h-screen flex flex-col mx-auto px-4 sm:px-6 lg:px-8 ",
-        {
-          'max-w-sm': size === 'sm',
-          'max-w-md': size === 'md',
-          'max-w-xl': size === 'xl',
-          'max-w-none': size === 'full',
-          'sm:max-w-xl xl:max-w-2xl': size === 'auto',
-        },
-        className
-      )}
-    >
-      <div className="py-4 gap-4 flex flex-col flex-1">{children}</div>
-      <BottomNav/>
-    </section>
-  )
+    <div className="app-shell">
+      <BottomNav />
+      <div className={cn("workspace", className)}>
+        <header className="workspace-bar">
+          <span>
+            Personal workspace <span className="bar-slash">/</span> Finances
+          </span>
+          <span className="workspace-status">
+            <i /> A little more clarity
+          </span>
+        </header>
+        <div className="page-content">
+          <DemoBanner />
+          {children}
+        </div>
+        <footer className="workspace-footer">
+          <span>Money Tracker</span>
+          <span>Small habits. More control.</span>
+        </footer>
+      </div>
+    </div>
+  );
 }
-
-
-export default Container

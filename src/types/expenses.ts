@@ -1,4 +1,4 @@
-import type {Categories} from "@/types/categories";
+import type { Categories } from "@/types/categories";
 
 export interface ExpensesData {
   _id?: string;
@@ -20,8 +20,17 @@ export interface ExpensesInputData {
   description?: string;
 }
 
-export interface ExpensesContextInterface{
+export interface ExpensesContextInterface {
+  isDemo: boolean;
+  ready: boolean;
+  startDemo: () => boolean;
+  exitDemo: () => boolean;
+  resetDemo: () => boolean;
+  addExpense: (input: Omit<ExpensesData, "_id">) => Promise<void>;
+  getExpense: (id: string, signal?: AbortSignal) => Promise<ExpensesData>;
+  deleteExpense: (id: string) => Promise<void>;
   expenses: ExpensesData[];
+  error: string | null;
   loading: boolean;
   fetchExpenses: () => Promise<void>;
 }

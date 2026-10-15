@@ -10,7 +10,7 @@ const inter = Inter({
 })
 export const metadata: Metadata = {
   title: "Money Tracker",
-  description: "Application to monitor your money",
+  description: "Your expenses. A clearer picture. Track and understand your finances.",
 };
 
 export default function RootLayout(
