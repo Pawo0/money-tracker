@@ -7,7 +7,8 @@
     "build": "next build",
     "build:turbo": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:demo": "node --test tests/demo.test.mjs"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.10.0",

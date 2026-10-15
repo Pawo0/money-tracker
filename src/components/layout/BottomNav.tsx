@@ -1,6 +1,7 @@
 "use client";
+import useExpenses from "@/hooks/useExpenses";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut, signIn } from "next-auth/react";
 import {
   ArrowUpRight,
@@ -21,6 +22,8 @@ const items = [
 ];
 export default function BottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { isDemo, exitDemo } = useExpenses();
   const { data: session } = useSession();
   return (
     <aside className="sidebar">
@@ -36,7 +39,10 @@ export default function BottomNav() {
           <Wallet size={17} />
         </span>
         <span>
-          My finances<small>Personal workspace</small>
+          {isDemo ? "Demo workspace" : "My finances"}
+          <small>
+            {isDemo ? "Explore with sample data" : "Personal workspace"}
+          </small>
         </span>
         <ChevronDown size={14} />
       </div>
@@ -87,18 +93,27 @@ export default function BottomNav() {
         </div>
         <button
           className="profile"
-          onClick={() => (session ? signOut() : signIn("google"))}
+          onClick={() => {
+            if (isDemo) {
+              if (exitDemo()) router.push("/");
+            } else if (session) signOut();
+            else signIn("google");
+          }}
         >
           <span className="avatar">
-            {session?.user?.name?.charAt(0) || "G"}
+            {isDemo ? "A" : session?.user?.name?.charAt(0) || "G"}
           </span>
           <span>
-            {session?.user?.name || "Guest"}
+            {isDemo ? "Alex Morgan" : session?.user?.name || "Guest"}
             <small>
-              {session ? "Personal account" : "Sign in with Google"}
+              {isDemo
+                ? "Demo account · Exit demo"
+                : session
+                  ? "Personal account"
+                  : "Sign in with Google"}
             </small>
           </span>
-          {session ? <LogOut size={16} /> : <LogIn size={16} />}
+          {session || isDemo ? <LogOut size={16} /> : <LogIn size={16} />}
         </button>
       </div>
     </aside>

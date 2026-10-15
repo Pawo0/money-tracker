@@ -13,32 +13,34 @@ import {
 import CurrentCategoryIcon from "@/components/features/categories/CurrentCategoryIcon";
 import { money } from "@/lib/utils/money";
 import type { ExpensesData } from "@/types/expenses";
+import AccountGate from "@/components/features/auth/AccountGate";
 import useExpenses from "@/hooks/useExpenses";
 export default function TransactionDetailsPage() {
+  return (
+    <AccountGate>
+      <TransactionDetails />
+    </AccountGate>
+  );
+}
+function TransactionDetails() {
   const { id } = useParams();
   const router = useRouter();
-  const { fetchExpenses } = useExpenses();
+  const { getExpense, deleteExpense, isDemo } = useExpenses();
   const [expense, setExpense] = useState<ExpensesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
     async function load() {
       setLoading(true);
+      setExpense(null);
       setError("");
       try {
-        const res = await fetch(`/api/expenses/${id}`, {
-          signal: controller.signal,
-        });
-        if (!res.ok)
-          throw new Error(
-            res.status === 404
-              ? "This transaction could not be found."
-              : "Unable to load this transaction.",
-          );
-        setExpense(await res.json());
+        const item = await getExpense(String(id), controller.signal);
+        if (!controller.signal.aborted) setExpense(item);
       } catch (e) {
         if (!controller.signal.aborted)
           setError(
@@ -50,17 +52,12 @@ export default function TransactionDetailsPage() {
     }
     if (id) load();
     return () => controller.abort();
-  }, [id, retry]);
+  }, [id, retry, getExpense]);
   async function remove() {
-    if (!window.confirm("Delete this transaction? This cannot be undone."))
-      return;
     setBusy(true);
     setError("");
     try {
-      const res = await fetch(`/api/expenses/${id}`, { method: "DELETE" });
-      if (!res.ok)
-        throw new Error("Unable to delete the transaction. Please try again.");
-      await fetchExpenses();
+      await deleteExpense(String(id));
       router.push("/history");
       router.refresh();
     } catch (e) {
@@ -144,14 +141,49 @@ export default function TransactionDetailsPage() {
                 Added {new Date(expense.created_at).toLocaleString("en-GB")}
               </p>
             )}
-            <button className="danger-button" disabled={busy} onClick={remove}>
-              {busy ? (
-                <Loader2 className="animate-spin" size={16} />
-              ) : (
-                <Trash2 size={16} />
-              )}{" "}
-              {busy ? "Deleting…" : "Delete transaction"}
-            </button>
+            {confirmDelete ? (
+              <div
+                className="delete-confirm"
+                role="group"
+                aria-label="Confirm deletion"
+              >
+                <h2>Delete this transaction?</h2>
+                <p>
+                  {isDemo
+                    ? "This removes the expense from your demo. Reset demo restores the original sample data."
+                    : "This permanently removes the expense from your account."}
+                </p>
+                <div className="form-actions">
+                  <button
+                    className="button button-secondary"
+                    disabled={busy}
+                    onClick={() => setConfirmDelete(false)}
+                  >
+                    Keep transaction
+                  </button>
+                  <button
+                    className="button delete-confirm-action"
+                    disabled={busy}
+                    onClick={remove}
+                  >
+                    {busy ? "Deleting…" : "Confirm delete"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                className="danger-button"
+                disabled={busy}
+                onClick={() => setConfirmDelete(true)}
+              >
+                {busy ? (
+                  <Loader2 className="animate-spin" size={16} />
+                ) : (
+                  <Trash2 size={16} />
+                )}{" "}
+                {busy ? "Deleting…" : "Delete transaction"}
+              </button>
+            )}
           </>
         )
       )}

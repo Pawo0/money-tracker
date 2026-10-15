@@ -20,36 +20,9 @@ import ExpenseChart from "./ExpenseChart";
 import LatestTransaction from "@/components/features/expenses/LatestTransactions";
 import { money } from "@/lib/utils/money";
 import { monthKey } from "@/lib/utils/date";
-import type { ExpensesData } from "@/types/expenses";
+import { createDemoExpenses } from "@/lib/demo";
+import DemoButton from "../auth/DemoButton";
 import GoogleButton from "../auth/GoogleButton";
-
-const demoExpenses: ExpensesData[] = [
-  ["Grocery shopping", -186.42, "ShoppingBasket", "Groceries", "#a7c9a0", 14],
-  ["Spotify Premium", -23.99, "Music2", "Subscriptions", "#b5a0d8", 13],
-  ["Coffee with a friend", -32, "Coffee", "Food & drinks", "#d7b58b", 12],
-  ["Monthly travel pass", -110, "TramFront", "Transport", "#8eafcb", 10],
-  ["Dinner at Nolio", -148, "Utensils", "Food & drinks", "#d7b58b", 9],
-  ["Weekly groceries", -245.6, "ShoppingBasket", "Groceries", "#a7c9a0", 7],
-  ["Electricity bill", -189, "House", "Home", "#c9a39c", 5],
-  ["Netflix", -49, "Music2", "Subscriptions", "#b5a0d8", 4],
-  ["Fresh market", -128.8, "ShoppingBasket", "Groceries", "#a7c9a0", 3],
-  ["Lunch break", -46, "Utensils", "Food & drinks", "#d7b58b", 2],
-  ["Rent", -2200, "House", "Home", "#c9a39c", 1],
-].map((row, i) => ({
-  _id: `demo-${i}`,
-  title: String(row[0]),
-  amount: Number(row[1]),
-  category: {
-    name: String(row[3]),
-    icon: row[2] as ExpensesData["category"]["icon"],
-    color: String(row[4]),
-  },
-  date: new Date(
-    new Date().getFullYear(),
-    new Date().getMonth(),
-    Math.min(Number(row[5]), new Date().getDate()),
-  ).toISOString(),
-}));
 
 export default function DashboardView({
   demo = false,
@@ -71,12 +44,15 @@ function DashboardContent({
   demo: boolean;
   name?: string | null;
 }) {
-  const { expenses, loading, error, fetchExpenses } = useExpenses();
+  const { expenses, loading, error, fetchExpenses, isDemo, ready } =
+    useExpenses();
+  const preview = demo && !isDemo;
+  const [demoExpenses] = useState(createDemoExpenses);
   const { selectedMonth, setSelectedMonth, availableMonths, formatMonthLabel } =
     useDashboardMonth();
   const [demoMonth, setDemoMonth] = useState(monthKey(new Date()));
-  const month = demo ? demoMonth : selectedMonth;
-  const all = demo ? demoExpenses : expenses;
+  const month = preview ? demoMonth : selectedMonth;
+  const all = preview ? demoExpenses : expenses;
   const current = useMemo(
     () => all.filter((e) => monthKey(new Date(e.date)) === month),
     [all, month],
@@ -98,7 +74,7 @@ function DashboardContent({
       return a;
     }, {}),
   ).sort((a, b) => b.amount - a.amount);
-  const months = demo
+  const months = preview
     ? [
         monthKey(
           new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
@@ -108,8 +84,10 @@ function DashboardContent({
     : availableMonths;
   const index = months.indexOf(month);
   const choose = (value: typeof month) =>
-    demo ? setDemoMonth(value) : setSelectedMonth(value);
-  const busy = !demo && loading;
+    preview ? setDemoMonth(value) : setSelectedMonth(value);
+  const busy = !preview && loading;
+  if (!ready)
+    return <div className="skeleton h-80" aria-label="Loading your account" />;
   return (
     <main>
       <div className="page-heading">
@@ -119,15 +97,19 @@ function DashboardContent({
             Overview<span className="heading-dot">.</span>
           </h1>
           <p>
-            {name ? `Welcome back, ${name.split(" ")[0]}. ` : ""}A little
-            clarity for your everyday finances.
+            {isDemo
+              ? "Welcome back, Alex. "
+              : name
+                ? `Welcome back, ${name.split(" ")[0]}. `
+                : ""}
+            A little clarity for your everyday finances.
           </p>
         </div>
         <Link className="button button-primary" href="/add">
           <Plus size={17} /> Add expense
         </Link>
       </div>
-      {demo && (
+      {preview && (
         <div className="demo-banner">
           <span>
             <Info size={16} />
@@ -136,10 +118,13 @@ function DashboardContent({
               <span className="muted">Sample data, real possibilities.</span>
             </span>
           </span>
-          <GoogleButton variant="secondary" />
+          <div className="demo-actions">
+            <DemoButton />
+            <GoogleButton variant="secondary" />
+          </div>
         </div>
       )}
-      {!demo && error && (
+      {!preview && !isDemo && error && (
         <div className="error-banner" role="alert">
           {error}
           <button onClick={fetchExpenses}>Try again</button>
@@ -238,8 +223,8 @@ function DashboardContent({
             </span>
           </div>
           <ExpenseChart
-            expensesOverride={demo ? current : undefined}
-            monthOverride={demo ? month : undefined}
+            expensesOverride={preview ? current : undefined}
+            monthOverride={preview ? month : undefined}
           />
           <div className="chart-footer">
             <ArrowDownLeft size={14} />
@@ -275,7 +260,7 @@ function DashboardContent({
                 ))}
               </div>
               <div className="category-list">
-                {groups.slice(0, 5).map((g) => (
+                {groups.map((g) => (
                   <div key={g.name}>
                     <span>
                       <i style={{ background: g.color }} />
@@ -311,13 +296,13 @@ function DashboardContent({
         <LatestTransaction
           expenses={current}
           limit={5}
-          demo={demo}
+          demo={preview}
           loading={busy}
         />
       </section>
       <div className="overview-end">
         <span className="status-dot" />{" "}
-        {demo
+        {preview
           ? "Preview mode · Sample transactions"
           : "Your finances. A little more organized."}
       </div>

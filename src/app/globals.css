@@ -1021,53 +1021,122 @@ textarea.field-input {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 60;
-  background: #0009;
-  backdrop-filter: blur(5px);
+  z-index: 100;
+  background: #080b09b8;
+  backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
   padding: 20px;
 }
 .category-dialog {
-  width: 440px;
+  width: 460px;
   max-width: 100%;
-  max-height: 85dvh;
+  max-height: calc(100dvh - 40px);
   overflow: auto;
-  padding: 25px;
-  background: #1c231e;
-  border: 1px solid #414c43;
+  overscroll-behavior: contain;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 25px 100px #0006;
+  box-shadow: 0 24px 80px #0007;
 }
 .dialog-heading {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 22px;
+  gap: 16px;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
 }
 .dialog-heading h2 {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 500;
+  letter-spacing: -0.4px;
+}
+.dialog-heading p {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 7px;
+}
+.category-dialog > .empty-state,
+.category-dialog > .error-banner,
+.category-dialog > .skeleton {
+  margin: 20px;
 }
 .category-options {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 9px;
+  gap: 4px;
+  padding: 12px;
 }
 .category-options button {
-  border: 1px solid #354139;
-  border-radius: 8px;
-  background: #252e28;
-  padding: 16px 6px;
   display: flex;
   align-items: center;
-  flex-direction: column;
-  gap: 9px;
-  font-size: 10px;
+  gap: 12px;
+  min-height: 52px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  font-size: 13px;
 }
 .category-options button:hover {
-  background: #34483a;
-  border-color: #94b29c;
+  background: #252c27;
+}
+.category-options button.is-selected {
+  background: #26332b;
+  border-color: #465c4c;
+}
+.category-option-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #202622;
+}
+.category-option-check {
+  margin-left: auto;
+  color: var(--mint);
+}
+.app-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+}
+.app-alert svg {
+  flex-shrink: 0;
+  color: var(--mint);
+}
+.app-alert-error,
+.app-alert-warning {
+  background: #30251f;
+  color: #e7bbae;
+}
+.app-alert-error svg,
+.app-alert-warning svg {
+  color: #e7bbae;
+}
+@media (max-width: 600px) {
+  .modal-backdrop {
+    align-items: end;
+    padding: 12px;
+  }
+  .category-dialog {
+    width: 100%;
+    max-height: calc(100dvh - 24px);
+  }
+  .dialog-heading {
+    padding: 20px;
+  }
 }
 .details-wrap {
   max-width: 700px;
@@ -1548,4 +1617,81 @@ textarea.field-input {
   .section-label {
     white-space: nowrap;
   }
+}
+
+.demo-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.demo-notice {
+  margin-bottom: 25px;
+}
+.demo-notice .demo-banner {
+  margin-bottom: 0;
+}
+.demo-feedback {
+  color: var(--mint);
+  font-size: 11px;
+  margin-top: 10px;
+}
+.auth-divider {
+  color: var(--muted);
+  font-size: 10px;
+  margin: 17px 0;
+}
+@media (max-width: 1100px) {
+  .demo-notice .demo-banner {
+    flex-wrap: wrap;
+  }
+  .demo-notice .demo-banner .muted {
+    display: inline;
+  }
+}
+@media (max-width: 760px) {
+  .demo-banner {
+    flex-wrap: wrap;
+  }
+  .demo-banner .demo-actions .button {
+    font-size: 10px;
+    gap: 6px;
+    padding: 7px 9px;
+  }
+  .demo-notice .demo-banner {
+    gap: 12px;
+  }
+  .demo-notice .demo-banner > span {
+    align-items: flex-start;
+    line-height: 1.7;
+  }
+  .demo-notice .demo-banner > span > svg {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+}
+
+.delete-confirm {
+  margin-top: 23px;
+  padding: 20px;
+  border: 1px solid #67423e;
+  background: #2c211e;
+  border-radius: 9px;
+}
+.delete-confirm h2 {
+  font-size: 14px;
+  margin-bottom: 9px;
+}
+.delete-confirm p {
+  color: #c9a89d;
+  font-size: 12px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.delete-confirm-action {
+  background: #b96650;
+  color: #fff;
+}
+.delete-confirm-action:hover {
+  background: #c57661;
 }

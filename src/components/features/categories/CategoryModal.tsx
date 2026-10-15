@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { X } from "lucide-react";
+import { Check, X } from "lucide-react";
+import { createPortal } from "react-dom";
 import useCategories from "@/hooks/useCategories";
 import { getIconByName } from "@/lib/utils/icons";
 import type { Categories } from "@/types/categories";
@@ -8,10 +9,12 @@ export default function CategoryModal({
   isOpen,
   onCloseAction,
   onSelectAction,
+  selectedCategory,
 }: {
   isOpen: boolean;
   onCloseAction: () => void;
   onSelectAction: (c: Categories) => void;
+  selectedCategory?: Categories | null;
 }) {
   const { categories, isLoading, error, retry } = useCategories();
   const ref = useRef<HTMLDivElement>(null);
@@ -47,7 +50,7 @@ export default function CategoryModal({
     };
   }, [isOpen, onCloseAction]);
   if (!isOpen) return null;
-  return (
+  return createPortal(
     <div
       className="modal-backdrop"
       onClick={(e) => {
@@ -59,10 +62,14 @@ export default function CategoryModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="category-title"
+        aria-describedby="category-description"
         ref={ref}
       >
         <div className="dialog-heading">
-          <h2 id="category-title">Choose a category</h2>
+          <div>
+            <h2 id="category-title">Choose a category</h2>
+            <p id="category-description">Where does this expense belong?</p>
+          </div>
           <button
             className="icon-button"
             aria-label="Close category selector"
@@ -89,23 +96,36 @@ export default function CategoryModal({
           <div className="category-options">
             {categories.map((c) => {
               const Icon = getIconByName(c.icon);
+              const selected = selectedCategory?.name === c.name;
               return (
                 <button
                   type="button"
                   key={c.baseId || c._id || c.name}
+                  className={selected ? "is-selected" : undefined}
+                  aria-pressed={selected}
                   onClick={() => {
                     onSelectAction(c);
                     onCloseAction();
                   }}
                 >
-                  <Icon color={c.color} size={23} />
+                  <span className="category-option-icon">
+                    <Icon color={c.color} size={19} aria-hidden="true" />
+                  </span>
                   <span>{c.name}</span>
+                  {selected && (
+                    <Check
+                      size={17}
+                      className="category-option-check"
+                      aria-hidden="true"
+                    />
+                  )}
                 </button>
               );
             })}
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

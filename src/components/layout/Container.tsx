@@ -1,3 +1,4 @@
+import DemoBanner from "@/components/features/auth/DemoBanner";
 import React from "react";
 import BottomNav from "@/components/layout/BottomNav";
 import { cn } from "@/lib/utils/ui";
@@ -22,7 +23,10 @@ export default function Container({
             <i /> A little more clarity
           </span>
         </header>
-        <div className="page-content">{children}</div>
+        <div className="page-content">
+          <DemoBanner />
+          {children}
+        </div>
         <footer className="workspace-footer">
           <span>Money Tracker</span>
           <span>Small habits. More control.</span>

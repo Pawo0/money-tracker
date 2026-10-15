@@ -29,7 +29,7 @@ const fresh = (): ExpensesInputData => ({
 });
 export default function Page() {
   const { status } = useSession();
-  const { fetchExpenses } = useExpenses();
+  const { addExpense, isDemo, ready } = useExpenses();
   const [inputs, setInputs] = useState(fresh);
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -38,9 +38,9 @@ export default function Page() {
     text: string;
   } | null>(null);
   const amountRef = useRef<HTMLInputElement>(null);
-  if (status === "loading")
+  if (!ready || (!isDemo && status === "loading"))
     return <div className="skeleton h-80" aria-label="Loading your account" />;
-  if (status !== "authenticated") return <AskToLoginPage />;
+  if (!isDemo && status !== "authenticated") return <AskToLoginPage />;
   const set = (key: keyof ExpensesInputData, value: string) =>
     setInputs((v) => ({ ...v, [key]: value }));
   async function submit(e: React.FormEvent) {
@@ -55,19 +55,13 @@ export default function Page() {
     }
     setBusy(true);
     try {
-      const res = await fetch("/api/expenses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...inputs,
-          title: inputs.title.trim() || inputs.category.name,
-          amount: -Number(inputs.amount),
-        }),
+      await addExpense({
+        ...inputs,
+        category: inputs.category,
+        title: inputs.title.trim() || inputs.category.name,
+        amount: -Number(inputs.amount),
       });
-      if (!res.ok)
-        throw new Error("Your expense could not be saved. Please try again.");
       setInputs(fresh());
-      await fetchExpenses();
       setMessage({
         error: false,
         text: "Expense added. Your overview is up to date.",
@@ -163,6 +157,7 @@ export default function Page() {
                 className="field-input category-select"
                 type="button"
                 aria-haspopup="dialog"
+                aria-expanded={open}
                 onClick={() => setOpen(true)}
               >
                 {inputs.category ? (
@@ -235,6 +230,7 @@ export default function Page() {
           </div>
           <CategoryModal
             isOpen={open}
+            selectedCategory={inputs.category}
             onCloseAction={() => setOpen(false)}
             onSelectAction={(category) =>
               setInputs((v) => ({ ...v, category }))

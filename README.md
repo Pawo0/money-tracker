@@ -18,6 +18,14 @@ Vercel Deployment: https://money-tracker-qev1.vercel.app/
 - Real-time revalidation using SWR
 - Responsive UI styled with Tailwind CSS
 
+## Demo account
+
+Choose **Try demo account** on the overview or sign-in screen. No Google account is needed. The demo includes 39 expenses across eight categories and three months, with dates relative to the current month.
+
+Explore the overview, month picker, category breakdown, searchable and filterable history, transaction details, and expense form. Additions and deletions are saved in this browser’s local storage and survive refreshes. Demo operations never write to MongoDB. **Reset demo** restores the original sample transactions; **Exit demo** clears local demo data and returns to the normal account experience. Changes synchronize between open tabs.
+
+Run the demo fixture and storage-validation checks with `npm run test:demo`.
+
 ## Tech stack
 
 | Area           | Technology                                   |
